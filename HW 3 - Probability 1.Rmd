@@ -287,6 +287,7 @@ probs_die_3 <- c(1/12,
 Now I will test the sample for die 1 for 1000 samples:
 
 ```{r}
+set.seed(33)
 sample_die_1 <- sample(x = values, size = 1000, replace = TRUE, prob = probs_die_1)
 sample_die_1
 ```
@@ -294,6 +295,7 @@ sample_die_1
 
 Now I will find the average and plot this in ggplot. First I will create a table that categorizes all of the values and counts. Then I will grab a simple average and then plot the new dataframe:
 ```{r}
+set.seed(33)
 d1 <- tibble(
     num = sample_die_1)
 
@@ -311,6 +313,7 @@ ggplot(d1, mapping = aes(x = num)) +
 
 Okay! Now I will do the same for sample die 2:
 ```{r}
+set.seed(33)
 sample_die_2 <- sample(x = values, size = 1000, replace = TRUE, prob = probs_die_2)
 
 d2 <- tibble(
@@ -330,6 +333,7 @@ avg_die_2
 
 Now for Die 3, the same thing:
 ```{r}
+set.seed(33)
 sample_die_3 <- sample(x = values, size = 1000, replace = TRUE, prob = probs_die_3)
 
 d3 <- tibble(
