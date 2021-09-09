@@ -295,7 +295,7 @@ ggplot(d1, mapping = aes(x = num)) +
 
 ```
 
-**I later learned how to add a line to show the average on othe chart! I will now go back and add that as well as the average output for each of these graphs**
+**I later learned how to add a line to show the average on the chart! I will now go back and add that as well as the average output for each of these graphs**
 
 Okay! Now I will do the same for sample die 2:
 ```{r}
