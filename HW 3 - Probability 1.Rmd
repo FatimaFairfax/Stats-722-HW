@@ -74,6 +74,18 @@ The probability of getting one black card first *and* then one red card in two d
 pr_black * (1 - (pr_black))
 ```
 
+The way to do this more data-wrangly would be to do the same thing to create a red probability:
+```{r}
+pr_red <- deck |> 
+  filter(color == "red") |> 
+  nrow() / nrow(deck)
+
+
+pr_black * pr_red
+
+```
+
+
 Then they ask the probability of getting one king *or* one ace in a single draw. This is P(king) + P(ace) - P(king and ace). The probability of king and ace though is 0. The probability of getting a king should be the same as getting an ace, but I will create a new variable for that:
 ```{r}
 pr_king <- deck |> 
