@@ -246,64 +246,7 @@ I am going to draw 1000 samples from 3 six-sided dice:
 
 Using ggplot I will show the values of the draws as well as the average for each die
 
-First step is that I will build each of the die:
-```{r}
-die_1 <- tibble(
-  value = c(1,
-      2,
-      3,
-      4,
-      5,
-      6),
-  probs = 
-    c(1/6,
-      1/6,
-      1/6,
-      1/6,
-      1/6,
-      1/6))
-
-die_2 <- tibble(
-  value = c(1,
-      2,
-      3,
-      4,
-      5,
-      6),
-  probs = 
-    c(1/6,
-      1/6,
-      1/12,
-      1/12,
-      0/6,
-      3/6))
-
-die_3 <- tibble(
-  value = c(1,
-      2,
-      3,
-      4,
-      5,
-      6),
-  probs = 
-    c(1/12,
-      1/12,
-      1/12,
-      1/12,
-      2/6,
-      2/6))
-  
-```
-
-Now I have the 3 weighted die. No I will look at the average for die_1 from a sample of 1000:
-```{r}
-
-```
-
-
-==
-
-So now I will create a die values vector and 3 probability vectors that correspond to the weights assigned:
+First step is that I will build each of the die. To do this, I will create a die values vector and 3 probability vectors that correspond to the weights assigned:
 ```{r}
 values <- c(1,2,3,4,5,6)
 
