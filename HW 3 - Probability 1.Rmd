@@ -100,7 +100,7 @@ Now my friend asks for some good poker hands of 5 cards without replacement. I'l
 A random poker hand would look like:
 ```{r}
 hand_1 <- deck |> 
-  sample_n(size = 5, replace = TRUE)
+  sample_n(size = 5, replace = FALSE)
 
 hand_1
 ```
