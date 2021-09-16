@@ -1,0 +1,434 @@
+---
+title: "Probability Workshop 2 HW"
+author: "Fatima Fairfax"
+date: "9/14/2021"
+output: html_document
+---
+
+## Question 1
+
+If we pick a random person in the world and they happen to be from South America, how would you express the conditional probably that they speak Spanish?
+
+To print it: $$ P(A | B) $$
+
+Using probability notation, the conditional statement above is:
+$$P(\text{Speaks Spanish} | \text{From South America})$$
+
+The probability that a person is from South America given they speak Spanish is:
+$$P(\text{From South America} | \text{Speaks Spanish})$$
+Between the two above conditional probabilities I would guess that the probability of speaking Spanish given you're from South America would be higher assuming that the amount of non-Spanish languages spoken outside of South America are a higher proportion than non-Spanish speakers in South America.
+
+The full conditional probability that someone speaks Spanish given that they are from South America would look like:
+
+$\frac{P(\text{Speaks Spanish} \cap \text{From South America})}{P(\text{From South America})}$
+
+
+## Question 2
+
+Revisiting the B&H questions using a branching tree using the DiagrammeR package. (I installed that in my console.)
+
+1. What is the probability that both children are girls if at least one of them is a girl?
+2. What is the probability that both children are girls given that the elder child is a girl?
+
+```{r}
+library(DiagrammeR)
+library(tidyverse)
+```
+
+
+```{r}
+#create visualization
+
+tree <- 
+  create_graph() |> #initiate graph
+  add_n_nodes(
+    n = 7,
+    type = "path",
+    label = c("START", "B", "G", "B", "G", "B", "G"), #Labels for each node
+    node_aes = node_aes(
+      shape = "circle",
+      height = 1,
+      width = 1,
+      x = c(0,3,3,6,6,6,6), #Just the heights of each node (so it looks like a tree)
+      y = c(0,2,-2,3,1,-3,-1),
+      fill = c("white", "blue", "green", "blue", "blue","blue","blue"))) |> 
+  add_edge(
+    from = 1,
+    to = 2,
+    edge_aes = edge_aes(
+      label = "0.5"
+    )) |> 
+  add_edge(
+    from = 1,
+    to = 3,
+    edge_aes = edge_aes(
+      label = "0.5",
+      color = "red"
+      )) |>
+  add_edge(
+      from = 2,
+      to = 4,
+      edge_aes = edge_aes(
+        label = "0.5"
+      )) %>% 
+  add_edge(
+      from = 2,
+      to = 5,
+      edge_aes = edge_aes(
+        label = "0.5"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 6,
+      edge_aes = edge_aes(
+        label = "0.5"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 7,
+      edge_aes = edge_aes(
+        label = "0.5"
+      ))
+
+render_graph(tree)
+```
+
+
+
+Now to modify this code to the following conditional probabilities:
+
+a. $$P(\text{both girls} | \text{at least one girl})$$
+
+```{r}
+tree2 <- 
+  create_graph() |> #initiate graph
+  add_n_nodes(
+    n = 7,
+    type = "path",
+    label = c("START", "B", "G", "B", "G", "B", "G"), #Labels for each node
+    node_aes = node_aes(
+      shape = "circle",
+      height = 1,
+      width = 1,
+      x = c(0,3,3,6,6,6,6), #Just the heights of each node (so it looks like a tree)
+      y = c(0,2,-2,3,1,-3,-1),
+      fill = c("white", "blue", "green", "blue", "blue","blue","green"))) |> 
+  add_edge(
+    from = 1,
+    to = 2,
+    edge_aes = edge_aes(
+      label = "0.5",
+      color = "red"
+    )) |> 
+  add_edge(
+    from = 1,
+    to = 3,
+    edge_aes = edge_aes(
+      label = "0.5",
+      color = "red"
+      )) |>
+  add_edge(
+      from = 2,
+      to = 4,
+      edge_aes = edge_aes(
+        label = "0.5"
+      )) %>% 
+  add_edge(
+      from = 2,
+      to = 5,
+      edge_aes = edge_aes(
+        label = "0.5",
+        color = "red"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 6,
+      edge_aes = edge_aes(
+        label = "0.5",
+        color = "red"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 7,
+      edge_aes = edge_aes(
+        label = "0.5",
+        color = "red"
+      ))
+
+render_graph(tree2)
+```
+
+
+So taking the red edges as the denominators (1/4 + 1/4 + 1/4) and the colored nodes as the numerator we care about (1/4), this will give us the same result as in the book = (1/4) / (3/4) = 1/3.
+
+b. $$P(\text{both girls} | \text{elder is a girl})$$
+
+```{r}
+tree3 <- 
+  create_graph() |> #initiate graph
+  add_n_nodes(
+    n = 7,
+    type = "path",
+    label = c("START", "B", "G", "B", "G", "B", "G"), #Labels for each node
+    node_aes = node_aes(
+      shape = "circle",
+      height = 1,
+      width = 1,
+      x = c(0,3,3,6,6,6,6), #Just the heights of each node (so it looks like a tree)
+      y = c(0,2,-2,3,1,-3,-1),
+      fill = c("white", "blue", "purple", "blue", "blue","blue","purple"))) |> 
+  add_edge(
+    from = 1,
+    to = 2,
+    edge_aes = edge_aes(
+      label = "0.5"
+    )) |> 
+  add_edge(
+    from = 1,
+    to = 3,
+    edge_aes = edge_aes(
+      label = "0.5",
+      color = "red"
+      )) |>
+  add_edge(
+      from = 2,
+      to = 4,
+      edge_aes = edge_aes(
+        label = "0.5"
+      )) %>% 
+  add_edge(
+      from = 2,
+      to = 5,
+      edge_aes = edge_aes(
+        label = "0.5"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 6,
+      edge_aes = edge_aes(
+        label = "0.5",
+        color = "red"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 7,
+      edge_aes = edge_aes(
+        label = "0.5",
+        color = "red"
+      ))
+
+render_graph(tree3)
+```
+
+
+This would show the denominator in red edges i.e., the branches that have a girl first and the nodes we care about i.e., getting GG. This maths out to: (1/4) / (1/4 + 1/4) = 1/2.
+
+
+## Question 3
+
+Looking at Bayes' rule in odds form, breaking it down into its three main parts:
+
+$\frac{P(A)}{P(A^c)}$
+
+This is the *prior odds* - the original odds in favor of A before any conditional observation is made
+
+$\frac{P(A | B)}{P(A^c | B)}$
+
+This is the *posterior odds* - the updated odds in favor of A given the evidence / observation of B
+
+$\frac{P(B | A)}{P(B|A^c)}$
+
+This is the *likelihood ratio* - this appears to be examining the accuracy of the conditional test. In the example we use later about positive tests and diseases, if A = positive test and B = has disease, the likelihood ratio represents the probability that you have the disease given that the test was positive over the probability you have the disease given that the test was negative. 
+
+Most online examples I have seen are specifically about medical diagnosis but seems to be consistent with the B&H chapter.
+
+*In class we went over the likelihood ratio as the confidence of the test*
+
+
+## Question 4
+
+Now looking at the example on page 51 of BH. We have a fair coin and a coin biased towards Head with P(Head) = 3/4. We are asking the probability that the coin we flip is fair given that we've observed three heads in a row. The following code is provided:
+
+```{r}
+fair_coin <- 1/2
+biased_coin <- 3/4
+heads <- 3
+
+fair_coin^heads * 1/2 / (fair_coin^3 * 1/2 + biased_coin^heads * 1/2)
+```
+
+The probability that we are flipping the fair coin is 23%.
+
+a. Figure out how many heads in a row are necessary for the probability that we are flipping a fair coin to dip below 10%. I will use a while() loop because that's what I understand conceptually. Here I keep the values for fair and biased coin and created a variable called head_count to count the heads in a row and then a variable prob_fair to keep track of the probability that the coin is fair as we increase the number of heads in a row. Then I use the code we have above to continue to update the probabilities:
+
+```{r}
+fair_coin <- 1/2
+bisaed_coin <- 3/4
+head_count <-  0
+probs_fair <- 1
+
+while(probs_fair > 0.1) {
+  probs_fair <-  fair_coin^head_count * 1/2 / (fair_coin^3 * 1/2 + biased_coin^head_count * 1/2)
+  print(paste("probs: ", probs_fair))
+  if (probs_fair < 0.1) {break}
+  head_count = head_count + 1
+  print(paste("count: ", head_count))
+}
+
+head_count
+```
+
+
+This while loop tells us we need 5 heads in a row before the probability that we are using the fair coin dips below 10%.
+
+b. Now I am going to examine how many heads in a row are needed for the probability to dip below 5% using the same while loop formula above:
+```{r}
+fair_coin <- 1/2
+bisaed_coin <- 3/4
+head_count <-  0
+probs_fair <- 1
+
+while(probs_fair > 0.05) {
+  probs_fair <-  fair_coin^head_count * 1/2 / (fair_coin^3 * 1/2 + biased_coin^head_count * 1/2)
+  print(paste("probs: ", probs_fair))
+  if (probs_fair < 0.05) {break}
+  head_count = head_count + 1
+  print(paste("count: ", head_count))
+}
+
+head_count
+```
+
+This shows that we would need 7 heads in a row for the probability that we have the fair coin to dip below 5%.
+
+c. Now we're seeing tails in a row. We want to know the probability that we are flipping a fair coin given that we have seen three tails in a row. To do this I will try to update my bias to be in terms of tails, so instead of biased_coin = 3/4 I'll have T_biased_coin = 1/4. Then I will take a similar formula that we have at the top of this question:
+```{r}
+fair_coin <- 1/2
+T_biased_coin <- 1/4
+tails <- 3
+
+fair_coin^tails * 1/2 / (fair_coin^3 * 1/2 + T_biased_coin^tails * 1/2)
+```
+
+
+Using the above formula I got that the probability is 89% that we have a fair coin if we see three Tails in a row.
+
+
+## Question 5
+
+Starting off with terminology:
+
+a. Specificity of a test: this is the true negative rate of the test. In this context, this is the probability that a negative test will reflect lack of the disease.
+
+Quantity: $$P(\text{neg test} | {\text{doesn't have disease}})$$
+In notation where T = positive test and D = having the disease and the accuracy is 95%, this can also be written as: $$P(T^c|D^c) = 0.95$$
+
+b. Sensitivity of a test: this is the true positive rate of the test. In this context, this is the probability that a positive test will reflect having the disease.
+
+Quantity: $$P(\text{pos test} | \text{has disease})$$
+In notation where T = positive test and D = having the disease and the accuracy is 95%, this can also be written as: $$P(T|D) = 0.95$$
+
+c. If sensitivity and specificity of the test for conditionitis is 90% and the prevalence of conditionitits in the population is still 1%, what is the probability that Fred has the disease given that he tested positive? 
+
+To do this I will use the Bayes' rule of total probability. In math notation this looks like the following:
+
+$\frac{P(\text{pos test}|\text{has disease}) P(\text{has disease})}{P(\text{pos test}|\text{has disease}) P(\text{has disease}) + P(\text{pos text}|\text{doesn't have disease})P(\text{doesn't have disease})}$
+
+To find the value I will use R to calculate:
+```{r}
+T_given_D <- 0.9
+prob_D <- 0.01
+T_given_no_d <- 0.1
+prob_no_D <- 0.99
+
+D_given_T <- (T_given_D * prob_D) / ((T_given_D * prob_D) + (T_given_no_d * prob_no_D))
+
+D_given_T
+```
+
+This gives us that the chance Fred has the disease given that he is tested positive is 8.3%.
+
+d. Andrea tests positive for conditionitis B. The test is 95% accurate - but the disease is much more common afflicting 5% of the population. What is the probability that Andrea has disease given that she tested positive? 
+
+I will set this up the same way as above but with different accuracy numbers and disease probability numbers:
+
+```{r}
+T_given_D <- 0.95
+prob_D <- 0.05
+T_given_no_d <- 0.05
+prob_no_D <- 0.95
+
+D_given_T_Andrea <- (T_given_D * prob_D) / ((T_given_D * prob_D) + (T_given_no_d * prob_no_D))
+
+D_given_T_Andrea
+```
+
+This shows that the probability Andrea has the disease given that she test positive with these new parameters is 50%!
+
+Let's look at this in tree form to see the logic:
+```{r}
+tree4 <-
+    create_graph() %>% # initiate graph
+    add_n_nodes(
+      n = 7, 
+      type = "path",
+      label = c("10000 People", "9500 People", "500 People", "9025 - True Negatives", "475 - False Positive", "475 - True Positive", "25 - False Negatives"), # Labels for each node
+      node_aes = node_aes(
+        shape = "circle",
+        height = 1,
+        width = 1,
+        x = c(0, 3, 3, 6, 6, 6, 6), # Just the heights of each node (so it looks like a tree)
+        y = c(0, 2, -2, 3, 1, -3, -1))) %>% 
+    add_edge(
+      from = 1,
+      to = 2,
+      edge_aes = edge_aes(
+        label = "healthy"
+      )) %>% 
+  add_edge(
+      from = 1,
+      to = 3,
+      edge_aes = edge_aes(
+        label = "diseased"
+      )) %>% 
+  add_edge(
+      from = 2,
+      to = 4,
+      edge_aes = edge_aes(
+        label = "test negative"
+      )) %>% 
+  add_edge(
+      from = 2,
+      to = 5,
+      edge_aes = edge_aes(
+        label = "test positive"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 6,
+      edge_aes = edge_aes(
+        label = "test positive"
+      )) %>% 
+  add_edge(
+      from = 3,
+      to = 7,
+      edge_aes = edge_aes(
+        label = "test negative"
+      )) 
+render_graph(tree4)
+```
+
+
+Looking at the tree the Andrea probability makes more logical sense.
+
+
+## Question 6
+
+Now we'll look at the prosecutor's fallacy: equating two conditional probabilities. Specifically:
+$$P(\text{evidence|innocence})$$ and $$P(\text{innocence|evidence})$$
+
+Here the prosecutor made the case that given innocence, the evidence (double infanticide) is so unlikely. Which means that given the evidence, they must be not innocence (guilty). This ignores the prior information about the high probability of innocence.
+
+Another example of this could maybe be the probability that you get struck by lightning given you are a baseball player. One could argue that the probability that you get struck by lightening is high if you are running around outside with a metal bat. Which means that the probability you are a baseball player is high if you've been struck by lightening. But that would ignore the prior probability that getting struck by lightening is highly unlikely.
+
+(I'm not sure I'm convinced about that one, but I found another one online that's the probability you cheated given you won the lottery is high because winning the lottery is improbable. The probability of winning the lottery without cheating is small, so that proves their guilt. But this ignores that the probability of any person winning the lottery is relatively high given how many people play it.)
