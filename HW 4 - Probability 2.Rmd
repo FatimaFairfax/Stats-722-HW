@@ -240,7 +240,7 @@ $\frac{P(B | A)}{P(B|A^c)}$
 
 This is the *likelihood ratio* - this appears to be examining the accuracy of the conditional test. In the example we use later about positive tests and diseases, if A = positive test and B = has disease, the likelihood ratio represents the probability that you have the disease given that the test was positive over the probability you have the disease given that the test was negative. 
 
-Most online examples I have seen are specifically about medical diagnosis but seems to be consistent with the B&H chapter.
+Most online examples I have seen are specifically about medical diagnosis but seem to be consistent with the B&H chapter.
 
 *In class we went over the likelihood ratio as the confidence of the test*
 
@@ -279,7 +279,7 @@ head_count
 ```
 
 
-This while loop tells us we need 5 heads in a row before the probability that we are using the fair coin dips below 10%.
+This while loop tells us we need **5** heads in a row before the probability that we are using the fair coin dips below 10%.
 
 b. Now I am going to examine how many heads in a row are needed for the probability to dip below 5% using the same while loop formula above:
 ```{r}
@@ -299,7 +299,7 @@ while(probs_fair > 0.05) {
 head_count
 ```
 
-This shows that we would need 7 heads in a row for the probability that we have the fair coin to dip below 5%.
+This shows that we would need **7** heads in a row for the probability that we have the fair coin to dip below 5%.
 
 c. Now we're seeing tails in a row. We want to know the probability that we are flipping a fair coin given that we have seen three tails in a row. To do this I will try to update my bias to be in terms of tails, so instead of biased_coin = 3/4 I'll have T_biased_coin = 1/4. Then I will take a similar formula that we have at the top of this question:
 ```{r}
@@ -311,7 +311,7 @@ fair_coin^tails * 1/2 / (fair_coin^3 * 1/2 + T_biased_coin^tails * 1/2)
 ```
 
 
-Using the above formula I got that the probability is 89% that we have a fair coin if we see three Tails in a row.
+Using the above formula I got that the probability is **89%** that we have a fair coin if we see three Tails in a row.
 
 
 ## Question 5
