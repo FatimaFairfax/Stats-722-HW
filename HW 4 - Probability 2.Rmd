@@ -254,7 +254,7 @@ fair_coin <- 1/2
 biased_coin <- 3/4
 heads <- 3
 
-fair_coin^heads * 1/2 / (fair_coin^3 * 1/2 + biased_coin^heads * 1/2)
+fair_coin^heads * 1/2 / (fair_coin^heads * 1/2 + biased_coin^heads * 1/2)
 ```
 
 The probability that we are flipping the fair coin is 23%.
@@ -268,7 +268,7 @@ head_count <-  0
 probs_fair <- 1
 
 while(probs_fair > 0.1) {
-  probs_fair <-  fair_coin^head_count * 1/2 / (fair_coin^3 * 1/2 + biased_coin^head_count * 1/2)
+  probs_fair <-  fair_coin^head_count * 1/2 / (fair_coin^head_count * 1/2 + biased_coin^head_count * 1/2)
   print(paste("probs: ", probs_fair))
   if (probs_fair < 0.1) {break}
   head_count = head_count + 1
@@ -279,7 +279,7 @@ head_count
 ```
 
 
-This while loop tells us we need **5** heads in a row before the probability that we are using the fair coin dips below 10%.
+This while loop tells us we need **6** heads in a row before the probability that we are using the fair coin dips below 10%.
 
 b. Now I am going to examine how many heads in a row are needed for the probability to dip below 5% using the same while loop formula above:
 ```{r}
@@ -289,7 +289,7 @@ head_count <-  0
 probs_fair <- 1
 
 while(probs_fair > 0.05) {
-  probs_fair <-  fair_coin^head_count * 1/2 / (fair_coin^3 * 1/2 + biased_coin^head_count * 1/2)
+  probs_fair <-  fair_coin^head_count * 1/2 / (fair_coin^head_count * 1/2 + biased_coin^head_count * 1/2)
   print(paste("probs: ", probs_fair))
   if (probs_fair < 0.05) {break}
   head_count = head_count + 1
@@ -299,7 +299,7 @@ while(probs_fair > 0.05) {
 head_count
 ```
 
-This shows that we would need **7** heads in a row for the probability that we have the fair coin to dip below 5%.
+This shows that we would need **8** heads in a row for the probability that we have the fair coin to dip below 5%.
 
 c. Now we're seeing tails in a row. We want to know the probability that we are flipping a fair coin given that we have seen three tails in a row. To do this I will try to update my bias to be in terms of tails, so instead of biased_coin = 3/4 I'll have T_biased_coin = 1/4. Then I will take a similar formula that we have at the top of this question:
 ```{r}
@@ -307,7 +307,7 @@ fair_coin <- 1/2
 T_biased_coin <- 1/4
 tails <- 3
 
-fair_coin^tails * 1/2 / (fair_coin^3 * 1/2 + T_biased_coin^tails * 1/2)
+fair_coin^tails * 1/2 / (fair_coin^tails * 1/2 + T_biased_coin^tails * 1/2)
 ```
 
 
