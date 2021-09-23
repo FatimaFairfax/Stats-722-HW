@@ -1,0 +1,800 @@
+---
+title: "HW 5 - Bayes Rules 1&2"
+author: "Fatima Fairfax"
+date: "9/20/2021"
+output: html_document
+---
+
+## Chapter 1 Exercises:
+
+
+### Question 1.1: Bayesian Chocolate Milk
+
+Leslie Knope used to think chocolate milk came from brown cows but changed her stance when she learned that there is something called chocolate syrup.
+
+a. Potential prior information was that there are white and brown cows that exist and that she consumes regular milk which is typically white as well as chocolate milk which is brown. 
+
+b. Leslie's new data was that there is a substance that can provide chocolate flavor and coloring to otherwise non-chocolate items.
+
+c. Leslie then concluded that it was more likely that all cows produce regular milk and that chocolate milk results in the combination of that regular milk and chocolate syrup. 
+
+
+### Question 1.2: Stats Tweets
+
+a. I was pretty sure that Marvel movies are the best superhero movies and after watching the latest DC comic film I am even more sure that Marvel movies are the best superhero movies #BayesianTweet
+
+b. There's a 1 in a billion chance that I win the lottery, so all I need to do is become a billionaire and play the $1 lotto a billion times to win it #FrequentistTweet
+
+
+### Question 1.3: Last Mind Shift
+
+I thought that DC in August is the hottest, most humid gross place on the East Coast. Then I moved to NC. With that extra data / experience, I now believe that DC August is not so bad, and NC in August is the hottest, most humid gross place to be.
+
+DC most gross and humid + living in NC ==> NC more gross and humid
+
+### Question 1.4: Changed someone's mind
+
+I recently got my roommate to change her mind that the Bachelor franchise is actually very entertaining and worth watching. She previously thought it was dumb and a waste of time. Then I made her watch it with me and now she's hooked!
+
+Bachelor is dumb and not worth watching + Watched with very cool roommate ==> Bachelor is dumb but worth watching
+
+
+### Question 1.5: Changing views of Bayes
+
+Author was neutral about Bayes stats. Took a course and became interested. Took bad course and became disinterested. Then took class with great prof and was very interested. 
+
+neutral about Bayes + new course about importance ==> interested in Bayes + course that was hard and gross ==> disinterested in Bayes + course with excellent prof ==> very interested in Bayes
+
+### Question 1.6: Apply for an internship
+
+Several scientists are opening a company. You know you're qualified. Ascertain if you will actually be offered the position = hypothesis.
+
+a. Frequentists thinking answers: If I do not get offered the position, what are the chances that I'm actually unqualified?
+
+b. Bayesian thinking answers: Given that I am qualified, what are the chances I get offered the position?
+
+c. I would rather know the answer to the Bayesian because its questioning the efficacy of the process (hiring qualified applicants) rather than testing under the assumed hypotheses if my data (my qualifications) are in fact correct. Said another way, it seeks to update the hypothesis based on the data rather than question the data given an alternate hypothesis.
+
+### Question 1.7: Knowing stuff
+
+a. I know stuff about Volleyball
+
+b. Hypothesis: People who watch it will think its the best sport to watch
+
+c. My current expertise takes in data about what makes a sport great to watch and what is great about volleyball. Seeing that volleyball has those features, I conclude that the hypothesis is correct or very likely
+
+d. This is Bayesian thinking.
+
+### Question 1.8: Benefit of Bayesian
+
+a. Bayesian statistics is useful because it allows us to refine our knowledge based on incoming data to get at a more agreed upon or universal posterior knowledge about a subject. This is helpful in social statistics because there are a lot of hypotheses and with more and more data we can begin to arrive at a central knowledge.
+
+b. Similarities in Bayesian and frequentist are that they both are trying to learn from data about the world. They use data to fit models, make predictions and test hypotheses. Differences are that Bayesian looks at relative plausibility and frequentist looks at long-run relative frequency.
+
+
+
+
+
+## Chapter 2 Exercises:
+
+### Question 2.1: Posteriors v. Priors
+
+Explain the relationship between the posterior and prior probabilities of B
+
+a. A = you finished the first novel by Benn and enjoyed it. B = you will also enjoy Benn's newest novel. 
+
+I would guess that $P(B|A) > P(B)$ because the assumption that you like the work of an author you have already read before and enjoyed is higher then the probability you read a book by a random author where you have no information on their work / style / subject matter etc.
+
+b. A = its 0 degrees F in Minnesota on a Jan day. B = it will be 60 degrees tomorrow.
+
+I would guess that $P(B|A) < P(B)$ because the probability that it will be 60 degrees tomorrow without knowing the weather today, the location, or the month is likely. 60 degrees is a reasonable temperature in many seasons. However, knowing that you are Minnesota in January which is very very cold (I can attest) and that the weather today is 0 degrees, its very unlikely that tomorrow it will jump to be a 60 degree day.
+
+c. A = the authors only got 3 hours of sleep last night. B = the authors make several typos in their writing today.
+
+$P(B|A) > P(B)$ because authors making typos is understandably likely, but knowing they got so little sleep last night leads me to believe that they are tired and potentially unfocused which would increase the likelihood that they make mistakes.
+
+d. A = your friend includes three hashtags in their tweet. B = the tweet gets retweeted.
+
+$P(B|A) > P(B)$ because hashtags make it so even people who don't follow my friend will potentially follow the hashtags they use, giving it a potentially wider audience so more people may see it, leading to potentially more people retweeting it.
+
+### Question 2.2: Driving, Prince, and R
+
+A = drives 10 miles per hour above the speed limit
+B = gets speeding ticket
+C = took statistics at the local college
+D = has used R
+E = likes the music of Prince
+F = Minnesotan 
+
+a. 73% of people that drive 10 miles per hour above the speed limit get a speeding ticket.
+
+$0.73 = P(B | A)$ Is a conditional probability because the act of driving over the speed limit is necessary for getting a speeding ticket.
+
+b. 20% of residents drive 10 miles per hour about the speed limit.
+
+$0.20 = P(A)$. This is a marginal probability.
+
+c. 15% of residents have used R
+
+$0.15 = P(D)$. This is a marginal probability.
+
+d. 91% of statistics students at the local college have used R.
+
+$0.91 = P(D \cap C) = P(D|C)P(C)$. This a joint probability that residents go to the local college and have used R.
+
+e. 38% of residents are Minnesotans that like Prince music
+
+$0.38 = P(F \cap E) = P(F|E)P(E)$. This is a joint probability that residents are Minnesotans and like Prince music.
+
+f. 95% of the Minnesotan residents like Prince music
+
+$0.95 = P(E | F)$. This is a conditional probability that you like Prince music given you are Minnesotan.
+
+### Question 2.3: Determine the Binomial
+
+Determine if Y is binomial. If yes, use notation to specify the model and its parameters. It not, explain why binomial is not appropriate for Y.
+
+*Binomials give the number of successes in a number of independent trials.*
+
+a. At a hospital, an average of 6 babies are born each hour. Y is the number of babies born between 9am and 10am tomorrow.
+
+No. This does not represent number of successes in independent trials, rather the number of events in a time period.
+
+b. Tulips planted in fall have a 90% chance of blooming in spring. You plant 27 tulips this year. Y is the number that bloom.
+
+Assuming that the blooming of tulips is independent of each other (which its probably not since they are likely planted in the same soil and one diseased flower would effect the others), this could be represented in a binomial: $Y|\pi \text~ Bin(27,0.9)$
+
+c. Each time they try out to be on Ru Paul's, Alaska has a 17% probability of succeeding. Let Y be the number of times Alaska has to try out until they're successful.
+
+No. This is about time until success, not how many successes are in a number of trials.
+
+d. Y is the amount of time that Henry is late to your lunch date
+
+No. This is about the time that he will be late. Not about successes in trials.
+
+e. Y is the probability that your friends will throw you a surprise birthday party even though you said you hate being the center of attention and just want to go eat out
+
+No. This is not about the number of successes in independent trials. This gives a probability of an event (surprise party) given your dislike of attention.
+
+f. You invite 60 people to you pi day party, none of whom know each other, and each whom has an 80% chance of showing up. Y is the total number of guests at your party.
+
+Yes. Trials are the 60 people (slots at the party) and rate of success is 80%. Its independent because no one knows each other so they aren't coming together. This would be represented as $Y|0.8 \text~ Bin(60,0.8)$
+
+
+### Question 2.4: Vampires
+
+Bella thinks there is a 0.05 probability that vampires exist. She also believes that the probability that someone can sparkle if vampires exist is 0.7. Probability that someone can sparkle if vampires don't exist is 0.03. Edward shows that he sparkles. Given that he sparkles, what's the probability that vampires exist?
+
+V = vampires exist
+S = sparkly
+P(V) = 0.05
+P(S|V) = 0.7
+P(S|V^c) = 0.03
+
+To get the probability that vampires exist given that he sparkles, P(V|S), we use the following:
+
+$P(V|S) = \frac{P(V)*P(S|V)}{P(S)}$
+
+$P(S) = (P(V)*P(S|V)) + (P(V^c)*P(S|V^c))$. The text gives this formula in likelihood and I inverted it to match the probability statements we have given their equivalence. Now I can find the value using a chunk below:
+
+```{r}
+prob_V = 0.05
+sparkle_giveV = 0.7
+sparkle_giveNOTV = 0.03
+
+prob_S = prob_V*sparkle_giveV + (1-prob_V)*sparkle_giveNOTV
+
+prob_Edward_vamp = (prob_V*sparkle_giveV) / prob_S
+
+prob_Edward_vamp
+
+#odds version of calculation as per class
+
+l_vamp = sparkle_giveV / sparkle_giveNOTV #likelihood ratio: is 23 more likely you're a vamp if you sparkle
+prior_odd_vamp = 1/19
+odds_vamp_spark = l_vamp * prior_odd_vamp
+probs_vamp_spark = 23 / (23+19)
+probs_vamp_spark
+```
+
+This provides the probability Edward is a vampire given he sparkles is *55%*.
+
+
+### Question 2.5: Sick Trees
+
+Local arboretum contains a variety of tree species. 18% of all trees are infected with mold. In the infected trees: 15% are elms, 80% are maples, 5% are other. In the uninfected trees: 20% are elms, 10% are maples, and 70% are other species. The employee selects a random tree to test.
+
+a. What's the prior probability that the selected tree has mold?
+
+$P(Mold) = 0.18$
+
+b. The tree happens to be a maple. The probability that the employee would have selected a maple P(Maple) can be found by the total probability:
+
+$P(Maple) = P(Maple \cap Moldy) + P(Maple \cap Not Moldy)$
+
+= $P(Maple | Modly)*P(Moldy) + P(Maple|Not Moldy)*P(Not Moldy)$
+
+```{r}
+P_Maple <- 0.8*0.18 + 0.10*(1 - 0.18)
+P_Maple
+```
+
+The total probability of selecting a maple tree is 23%.
+
+c. What's the posterior probability of the selected tree having mold?
+
+To find the posterior probability I use the following with the total probability of maple given above:
+
+$P(Mold | Maple) = \frac{P(Mold)*P(Maple | Mold)} {P(Maple)}$
+
+```{r}
+P_Mold = 0.18
+P_Maple_giveMold = 0.8
+
+P_Mold_Post <-  (P_Mold*P_Maple_giveMold) / P_Maple
+
+P_Mold_Post
+```
+
+This gives a *64%* posterior probability of the tree having mold.
+
+d. Compare the prior to the posterior. How does the understanding change given the tree is a maple?
+
+Given how dominant Maple trees are represented in the infected trees, the information that the tree is a Maple provides pretty strong prior evidence that this tree will have mold.
+
+
+### Question 2.6: Yelp Reviews
+
+Probability that Sandra likes a restaurant is 0.7 (P(R) = 0.7). Among the restaurants she likes, 20% have five starts on Yelp, 50% have four stars and 30% have less than four stars. To find out the posterior probability that Sandra likes a restaurant given that it has fewer than four stars you would need to calculate the following:
+
+R = likes a restaurant
+S = fewer than 4 stars
+
+$P(R|S) = \frac{P(R)*P(S|R)}{P(S)}$
+$P(S) = P(S|R)*P(R) + P(S|R^c)*P(R^c)$
+
+The only value we don't have is P(S|R^c): the probability that a restaurant has fewer than 4 stars on yelp given that she doesn't like it.
+
+
+### Question 2.7: Dating Apps
+
+Matt is on a dating app. Matt swipes right on 8% of profiles. Of the people he swipes right on 40% are men, 30% are women, 20% are non-binary, and 10% identify another way. Of the people he does not swipe right on, 45% are men, 40% are women, 10% are non-binary, and 5% identify another way. 
+
+R = right swipe
+N = non-binary
+M = men
+W = women
+O = other identity
+
+a. Probability that a randomly chosen person on the app is non-binary.
+
+Use the total probability formula to understand the following:
+
+$P(N) = P(N|R)*P(R) + P(N|R^c)*P(R^c)$
+```{r}
+P_nonbinary <- 0.20*0.08 + 0.10*0.92
+P_nonbinary
+```
+
+The probability you randomly choose a non-binary person is *11%*.
+
+b. Given that Matt is looking at the profile of someone who is non-binary, what's the posterior probability that he swipes right?
+
+$P(R|N) = \frac{P(R)*P(N|R)}{P(N)}$
+```{r}
+(0.08 * 0.20)/P_nonbinary
+```
+
+This posterior probability is *15%*.
+
+
+
+### Question 2.8: Airline Delays
+
+For a certain airline, 30% of flights depart in the morning, 30% in the afternoon, and 40% at night. 15% of all flights are delayed. Of the delayed flights, 40% are morning flights, 50% are afternoon flights, and 10% are evening flights. Alicia and Mine are taking separate flights to attend a conference.
+
+D = delayed
+M = morning
+A = afternoon
+N = evening
+
+a. Mine is on a morning flight. What's the probability that her flight is delayed?
+
+$P(D|M) = \frac{P(D)*P(M|D)}{P(M)}$
+```{r}
+P_delayed_morn <- (0.15*0.4) / 0.3
+P_delayed_morn
+```
+
+The probability that Mine's flight is delayed is *20%*.
+
+b. Alicia's flight is not delayed. What's the probability she's on a morning flight?
+
+The probability we are looking for is: $P(M|D^c)$
+
+To get there, I'll use the data we have in the law of total probability to solve for this. The law of total probability gets us: $P(M) = P(M|D)*P(D) + P(M|D^c)*P(D^c)$. We have P(M) = 0.3, P(M|D) = 0.4, P(D) = 0.15, P(D^c) = 0.85. Using all of these, we can solve for P(M|D^c):
+
+```{r}
+P_morn_notdelay <- (0.3 - (.4*.15))/0.85
+P_morn_notdelay
+```
+
+The probability that the flight is a morning flight is *28%*
+
+
+### Question 2.9: Bad Moods
+
+Roommate has two moods, good and bad. Good mood 40% of the time. Mood is related to how many texts they received. If they are in a good mood, the chance they had 0 texts is 5%, change they had between 1 and 45 is 84%, and chance they had more than 45 is 11%. If they're in a bad mood, 13% chance for 0 texts, 86% chance for 1-45, 1% chance for above 45.
+
+a. Create a table for the above data:
+
+To do this I have to find all of the joint probabilities. For example, the first cell of this table will correspond to the value of $P(\text{0 texts} \cap \text{Good Mood}) = P(\text{0 texts} | \text{Good Mood}) * P(\text{Good Mood})$. We have all those values so I could plug and chug. To make this simpler, I will try to utilize vectors.
+
+```{r}
+P_good <- 0.4
+P_bad <- 0.6
+
+texts_good <- c(0.05,0.84,0.11)
+texts_bad <- c(0.13,0.86,0.01)
+
+good_joints <- P_good * texts_good
+bad_joints <- P_bad * texts_bad
+Total <- good_joints + bad_joints
+```
+
+Then I will attempt to create a table in Rstudio with this info:
+```{r}
+mood <- matrix(c(good_joints,bad_joints,Total),ncol=3,byrow=FALSE)
+colnames(mood) <- c("Good Mood", "Bad Mood","Total")
+rownames(mood) <- c("O texts", "1-45 texts","46+ texts")
+mood <- as.table(mood)
+mood
+```
+
+Ahhh yay! That looks like I wanted it to look!!
+
+
+b. Without knowing about texts, what's the probability that roommate is in a good mood?
+
+This would be the prior and the value is 0.4 = *40%*
+
+c. You see they got 50 texts yesterday. How likely are they to have received this many texts if they are in a good mood?
+
+This is the likelihood. $L(50 texts | Good Mood) = P(Good Mood | 50 texts)$. 
+
+To find this value I find: $P(Good Mood | 50 texts) = \frac{P(Good Mood \cap 50 texts)}{P(Good Mood)}$ taking values from the numbers calculated above.
+
+```{r}
+l_texts <- 0.044 / (0.02 + 0.336 + 0.044)
+l_texts
+```
+
+This gives a likelihood of *11%* 
+
+d. The posterior probability that my roommate is in a good mood given they received 50 texts. 
+
+To get this I look at the row that 50 texts falls under (46+) which has a total of 0.050. Then I look at the proportion of good mood in this case, which is 0.044.
+```{r}
+0.044 / 0.050
+```
+
+The probability that they got the 50 texts given they are in a good mood is *88%*.
+
+
+### Question 2.10: Rural LGBTQ
+
+Study of 415,000 Californian public middle and high school students found that 8.5% live in rural areas and 91.5% in urban. 10% of students in rural areas and 10.5% of students in urban areas identified as LGBTQ.
+
+Q = LGBTQ
+R = Rural
+
+a. If you take one student, what are the chances they identify as LGBTQ?
+
+This is a question of total probability:
+
+$P(Q) = P(Q|R)*P(R) + P(Q|R^c)*P(R^c)$
+
+```{r}
+Prob_Q_total <-  (0.10 * 0.085) + (0.105 * 0.915)
+Prob_Q_total
+```
+
+This says that if you choose a random student there is *10.5%* that they identify as LGBTQ.
+
+
+b. If they identify as LGBTQ, what's the probability they live in a rural area?
+
+This is a posterior: 
+
+$P(R|Q) = \frac{P(R)*P(Q|R)}{P(Q)}$
+
+```{r}
+(0.085 * 0.10) / Prob_Q_total
+```
+
+This gives the probability that they live in an rural area given they identify as LGBTQ as about *8%*.
+
+c. If they do not identify as LGBTQ, what's the probability that they live in a rural area?
+
+I do the same operation as the above but using Q^c:
+
+$P(R|Q^c) = \frac{P(R)*P(Q^c|R)}{P(Q^c)}$
+
+```{r}
+(0.085 * (1 - 0.10)) / (1 - Prob_Q_total)
+```
+
+This gives about *8.5%*
+
+
+### Question 2.11: Internship
+
+Muhammad applies for 6 equally competitive data science internships.  He has the provided prior model.
+
+a. Y = number of offers he gets. Specify the model for the dependence of Y on \pi and the corresponding pmf, $f(y|\pi)$
+
+The dependence model is Binomial and follows: $Y|\pi \text~ Bin(6,\pi)$
+The pmf is given by: $f(y|\pi) = P(Y=y|\pi)$
+
+b. Muhammad was offered 4 of 6 internships. How likely would this be if \pi = 0.3?
+
+I will input this value of Y = 4 into the likelihood formula. $L(\pi = 0.3|y=4) = f(y=4|\pi = 0.3)$. 
+
+f(y=4|\pi = 0.3) = (6 choose 4)*(0.3)^4(0.7)^2
+
+```{r}
+choose(6,4) * (0.3^4) * (0.7^2)
+```
+
+It's about 6% likely if Muhammad's \pi is 0.3.
+
+c. Construct the posterior model.
+
+This is given by the following formula:
+$f(\pi|y=4) = \frac{f(\pi)L(\pi|y=4)}{f(y=4)} \text{for all } \pi$
+
+To do this I will do the long hand/plug and chug to make sure I understand. I need to calculate all of the likelihoods and the normalizing constant. The likelihoods are needed for the normalizing constant so I will do that first:
+```{r}
+L_pi1 <- choose(6,4) * (0.3^4) * (0.7^2)
+L_pi2 <- choose(6,4) * (0.4^4) * (0.6^2)
+L_pi3 <- choose(6,4) * (0.5^4) * (0.5^2)
+```
+
+Then I will get the normalizing constant:
+```{r}
+norm_c <- (L_pi1 * 0.25) + (L_pi2 * 0.6) + (L_pi3 * 0.15)
+```
+
+Now to get all of the posteriors, I will make a vector of the numerators and then divide by the normalizing constant for each:
+```{r}
+num_pi1 = L_pi1 * 0.25
+num_pi2 = L_pi2 * 0.6
+num_pi3 = L_pi3 * 0.15
+
+num_vect <- c(num_pi1,num_pi2,num_pi3)
+
+post <- num_vect / norm_c
+post
+```
+
+This provides the posterior values.
+
+
+### Question 2.12: Making Mugs
+
+Miles has 7 handles. Y is the number of handles good enough to use. 
+
+a. The dependence model is Binomial and follows: $Y|\pi \text~ Bin(7,\pi)$
+The pmf is given by: $f(y|\pi) = P(Y=y|\pi)$
+
+b. Only one handle is good enough. What's the posterior pmf of \pi? 
+
+Going to use the above approach to do this calculation and get the posterior pmf:
+```{r}
+
+pis <- c(0.1,0.25,0.4)
+priors <- c(0.2,0.45,0.35)
+
+l_1 <- choose(7,1) * (pis[1]^1) * ((1-pis[1])^6)
+l_2 <- choose(7,1) * (pis[2]^1) * ((1-pis[2])^6)
+l_3 <- choose(7,1) * (pis[3]^1) * ((1-pis[3])^6)
+
+norm_mugs <- (l_1 * priors[1]) + (l_2 * priors[2]) + (l_3 * priors[3])
+
+posterior_mugs <- c(priors[1]*l_1,priors[2]*l_2,priors[3]*l_3) / norm_mugs
+posterior_mugs
+  
+```
+
+This provides these posterior values. 
+
+c. Differences between the prior and posterior model?
+
+The shifts in the posterior give more likelihood to 0.1 and 0.25 \pis. This makes sense because there was a pretty low 'success' rate in his handle making in the trial of 7 which adjusts the values to reflect that data.
+
+d. Mile's teacher Kris had a different set of priors. Find the new posterior and compare it to Mile's posterior:
+```{r}
+pis <- c(0.1,0.25,0.4)
+priors_Kris <- c(0.15,0.15,0.7)
+
+l_1 <- choose(7,1) * (pis[1]^1) * ((1-pis[1])^6)
+l_2 <- choose(7,1) * (pis[2]^1) * ((1-pis[2])^6)
+l_3 <- choose(7,1) * (pis[3]^1) * ((1-pis[3])^6)
+
+norm_mugs <- (l_1 * priors_Kris[1]) + (l_2 * priors_Kris[2]) + (l_3 * priors_Kris[3])
+
+posterior_mugs_Kris <- c(priors_Kris[1]*l_1,priors_Kris[2]*l_2,priors_Kris[3]*l_3) / norm_mugs
+posterior_mugs_Kris
+```
+
+Kris's posterior look different than Mile's. Kris was more off in their priors giving a very large probability to 0.4 probability of success. The data (1/7 handles) flattened their data somewhat, but still is effected by the high prior in 0.4. Mile's posteriors shifted in a way that seems to get closer to the observed data aka the prior agreed more with the incoming data. 
+
+### Question 2.13: Lactose Intolerant
+
+Fatima (that's me!!) is learning more about lactose intolerance (coincidentally, I am lactose intolerant). Here are her priors:
+```{r}
+pis_lact <- c(0.4,0.5,0.6,0.7)
+priors_lact <- c(0.1,0.2,0.44,0.26)
+```
+
+a. She surveys 80 adults and 47 are lactose intolerant. Without math, I would guess at a posterior model that increases the value of the 0.5 probability and decreases the value of the 0.7 probability but not significantly. This sample have a bit above 50% lactose intolerance, but the sample is not huge enough to shift the model dramatically.
+
+b. Calculate the posterior and see how it relates to my guess:
+```{r}
+l_1_lact <- choose(80,47) * (pis_lact[1]^47) * ((1-pis_lact[1])^33)
+l_2_lact <- choose(80,47) * (pis_lact[2]^47) * ((1-pis_lact[2])^33)
+l_3_lact <- choose(80,47) * (pis_lact[3]^47) * ((1-pis_lact[3])^33)
+l_4_lact <- choose(80,47) * (pis_lact[4]^47) * ((1-pis_lact[4])^33)
+
+norm_lact <- (l_1_lact * priors_lact[1]) + (l_2_lact * priors_lact[2]) + (l_3_lact * priors_lact[3]) + (l_4_lact * priors_lact[4])
+
+posterior_lact <- c(priors_lact[1]*l_1_lact,priors_lact[2]*l_2_lact,priors_lact[3]*l_3_lact,priors_lact[4]*l_4_lact) / norm_lact
+posterior_lact
+```
+
+This swung the values in favor of 0.6 a lot more than I would have assumed. Possibly because these are discrete values and so all the weight of above 0.5 and below 0.7 is given to mean that 0.6 predicts it the best.
+
+c. If I collected a sample of 800 adults and 470 are lactose intolerant, I would expect this to swing it even more to increase the pmf of \pi = 0.6.
+
+```{r}
+l_1_lact <- choose(800,470) * (pis_lact[1]^470) * ((1-pis_lact[1])^330)
+l_2_lact <- choose(800,470) * (pis_lact[2]^470) * ((1-pis_lact[2])^330)
+l_3_lact <- choose(800,470) * (pis_lact[3]^470) * ((1-pis_lact[3])^330)
+l_4_lact <- choose(800,470) * (pis_lact[4]^470) * ((1-pis_lact[4])^330)
+
+norm_lact <- (l_1_lact * priors_lact[1]) + (l_2_lact * priors_lact[2]) + (l_3_lact * priors_lact[3]) + (l_4_lact * priors_lact[4])
+
+posterior_lact <- c(priors_lact[1]*l_1_lact,priors_lact[2]*l_2_lact,priors_lact[3]*l_3_lact,priors_lact[4]*l_4_lact) / norm_lact
+posterior_lact
+```
+
+Yep, this gives an extremely high f(\pi) for 0.6 (over 99%).
+
+### Question 2.14: Late Bus
+
+Li Qiang takes the 8:30am bus to work. If the bus is late, she will be late to work. To learn about the probability that the bus will be late(\pi), she surveys 20 commuter. 3 think \pi = 0.15, 3 think \pi = 0.25, 8 think \pi = 0.5, 3 think \pi = 0.75, and 3 think \pi = 0.85
+
+a. Convert this to a prior model.
+
+Each of these guesses is the \pi and the proportion are the priors. E.g., 3/20 = 0.15 is the prior for \pi = 0.15:
+```{r}
+pis_bus <- c(0.15,0.25,0.5,0.75,0.85)
+priors_bus <- c(3/20,3/20,8/20,3/20,3/20)
+```
+
+b. She wants to update her prior model with data that in 13 days, the bus was late 3 times. Create the posterior model:
+```{r}
+l_1_bus <- choose(13,3) * (pis_bus[1]^3) * ((1-pis_bus[1])^10)
+l_2_bus <- choose(13,3) * (pis_bus[2]^3) * ((1-pis_bus[2])^10)
+l_3_bus <- choose(13,3) * (pis_bus[3]^3) * ((1-pis_bus[3])^10)
+l_4_bus <- choose(13,3) * (pis_bus[4]^3) * ((1-pis_bus[4])^10)
+l_5_bus <- choose(13,3) * (pis_bus[5]^3) * ((1-pis_bus[5])^10)
+
+
+norm_bus <- (l_1_bus * priors_bus[1]) + (l_2_bus * priors_bus[2]) + (l_3_bus * priors_bus[3]) + (l_4_bus * priors_bus[4]) + (l_5_bus * priors_bus[5])
+
+posterior_bus <- c(priors_bus[1]*l_1_bus,priors_bus[2]*l_2_bus,priors_bus[3]*l_3_bus,priors_bus[4]*l_4_bus,priors_bus[5]*l_5_bus) / norm_bus
+posterior_bus
+```
+
+c. Li Qiang learned that the bus is most likely to be late 25% of the time and that some people are very dissatisfied and grossly over estimate the amount the bus is late. She can more safely take this bus to work.
+
+
+### Question 2.15: Cuckoo Birds
+
+Brood parasites! Lisa is studying the success rate of cuckoo hatchlings surviving at least one week. The prior model is:
+```{r}
+pis_cu <- c(0.6,0.65,0.7,0.75)
+priors_cu <- c(0.3,0.4,0.2,0.1)
+```
+
+a. If the previous researcher had been more sure that a hatchling would survive, how would the prior be different?
+
+There would be higher values of f(\pi) for the last two \pis giving a higher chance for higher survival rates.
+
+b. If the previous researcher had been less sure of survival, how would the model be different?
+
+There might be higher values for f(0.6) or there would be lower \pi options available.
+
+c. Lisa collects data. Among 15 birds, 10 survived. What is the posterior model?
+```{r}
+l_1_cu <- choose(15,10) * (pis_cu[1]^10) * ((1-pis_cu[1])^5)
+l_2_cu <- choose(15,10) * (pis_cu[2]^10) * ((1-pis_cu[2])^5)
+l_3_cu <- choose(15,10) * (pis_cu[3]^10) * ((1-pis_cu[3])^5)
+l_4_cu <- choose(15,10) * (pis_cu[4]^10) * ((1-pis_cu[4])^5)
+
+
+norm_cu <- (l_1_cu * priors_cu[1]) + (l_2_cu * priors_cu[2]) + (l_3_cu * priors_cu[3]) + (l_4_cu * priors_cu[4])
+
+posterior_cu <- c(priors_cu[1]*l_1_cu,priors_cu[2]*l_2_cu,priors_cu[3]*l_3_cu,priors_cu[4]*l_4_cu) / norm_cu
+posterior_cu
+```
+
+This gives the updates posteriors.
+
+d. Lisa needs to explain the posterior model in a paper and can't assume they understand Bayesian. Summarize for them.
+
+Originally, we assumed the prior model from past research, which gives us the probability of different rates of survival for the cuckoo birds. After having observed 15 birds and found that 10 of them survived past a week, we were able to update our original model of probabilities to find that our prior model that predicted that the highest probability was a 65% survival rate was consistent with our current research, which provides more confidence, or higher probability, that the survival rate is 65%.
+
+
+### Question 2.16: Fake Art
+
+How much museum art is fake??
+
+a. After reading the article, this is the prior I would build:
+
+```{r}
+pis_art <- c(0.05,0.2,0.4,0.6)
+priors_art <- c(0.15,0.45,0.25,0.15)
+```
+
+It seems like experts tend lower and are convinced that the public is exaggerating. However, I can't give too much credit to the one person who thinks its 2% even though they do seem more qualified than me to assess.
+
+b. How does it compare to the prior provided?
+
+```{r}
+pis_art <- c(0.2,0.4,0.6)
+priors_art <- c(0.25,0.5,0.25)
+```
+
+This gives a very even distribution where mine is a bit more bumpy, also because I provided 4 points. They give highest likelihood to 0.4 where I give it to 20%.
+
+c. If you choose 10 random works and assume the prior from part b, what is the minimum number of art that would need to be forged for $f(\pi = 0.6|Y=y) > 0.4$?
+
+I'm going to try a loop for this one to test values from 1 to 10:
+```{r}
+pis_art <- c(0.2,0.4,0.6)
+priors_art <- c(0.25,0.5,0.25)
+
+
+for(y in 1:10){
+  l_1_art <- choose(10,y) * (pis_art[1]^y) * ((1-pis_art[1])^(10-y))
+  l_2_art <- choose(10,y) * (pis_art[2]^y) * ((1-pis_art[2])^(10-y))
+  l_3_art <- choose(10,y) * (pis_art[3]^y) * ((1-pis_art[3])^(10-y))
+  
+  norm_art <- (l_1_art * priors_art[1]) + (l_2_art * priors_art[2]) + (l_3_art * priors_art[3])
+  
+  pi_6_post <- (priors_art[3] * l_3_art) / norm_art
+  print(paste(y,"posterior: ",pi_6_post))
+}
+
+```
+
+This gets me that for $f(\pi = 0.6|Y=y) > 0.4$ y needs to take a value of *6*.
+
+
+**Choose two of the simulation exercises**
+
+### Question 2.17: Sick Trees Redux
+
+Repeat 2.5 using simulation to approx the posterior with 10,000 trees:
+```{r}
+library(tidyverse)
+library(janitor)
+
+
+trees <- data.frame(type = c("sick","well"))
+prior <- c(0.18,0.82)
+
+set.seed(369)
+
+trees_sim <- sample_n(trees,size=10000,weight=prior,replace=TRUE)
+
+trees_sim |> 
+  tabyl(type) |> 
+  adorn_totals("row")
+```
+
+Looking to see if this is formed how it should be.
+
+```{r}
+trees_sim <- trees_sim |> 
+  mutate(data_model = case_when(
+    type == "sick" ~ 0.80,
+    type == "well" ~ 0.10
+  ))
+
+glimpse(trees_sim)
+```
+
+Again, checking that my data looks consistent.
+
+Now looking at likelihoods:
+```{r}
+data <- c("Maple","Non-Maple")
+
+set.seed(3)
+
+trees_sim <- trees_sim |> 
+  group_by(1:n()) |>
+  mutate(usage = sample(data, size = 1,
+                        prob = c(data_model, 1 - data_model)))
+
+trees_sim |> 
+  tabyl(usage,type) |> 
+  adorn_totals(c("col","row"))
+```
+
+Finally to the posterior:
+```{r}
+trees_sim |> 
+  filter(usage == "Maple") |> 
+  tabyl(type) |> 
+  adorn_totals("row")
+```
+
+This shows that the posterior probability of selecting a maple tree that has mold is 63%. (which is close to the value we need!!!)
+
+
+### Question 2.18: Lactose revisited
+
+Looking at the lactose question through simulation of 10,000 people.
+
+```{r}
+library(janitor)
+
+lactose <- data.frame(pi = c(0.4,0.5,0.6,0.7)) #possible probabilities
+prior_lactose <- c(0.1,0.2,0.44,0.26) #prior model
+
+#simulate values
+set.seed(369)
+lactose_sim <- sample_n(lactose,size=10000,weight=prior_lactose,replace=TRUE)
+
+#simulate outcomes
+lactose_sim <- lactose_sim |> 
+  mutate(y = rbinom(10000,size=80,prob = pi))
+
+#check it out
+lactose_sim |> 
+  head(3)
+```
+
+Okay, now to summarize the prior:
+
+```{r}
+lactose_sim |> 
+  tabyl(pi) |> 
+  adorn_totals("row")
+```
+
+This looks like our priors! Amazing
+
+Then I'll focus on simulations where y = 47
+
+```{r}
+no_milk <- lactose_sim |> 
+  filter(y==47)
+
+#summarize the posterior approx
+no_milk |> 
+  tabyl(pi) |> 
+  adorn_totals("row")
+
+#and plot it for fun
+ggplot(no_milk,aes(x=pi)) +
+  geom_bar()
+```
+
+
+That is very close to the values of the posterior I calculated above! Interestingly, the posterior of 0.4 was so low / close to zero that R dropped it from this plot.
+
