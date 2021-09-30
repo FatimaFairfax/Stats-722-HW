@@ -1,0 +1,777 @@
+---
+title: "HW 6 - Bayes Rules 3"
+author: "Fatima Fairfax"
+date: "9/28/2021"
+output: html_document
+---
+
+```{r}
+library(bayesrules)
+library(tidyverse)
+```
+
+
+## Question 3.1: Tune Beta
+
+In each situation, tune Beta that reflects the prior info. We want to use the following formulas to tune Beta: $E(\pi) = \frac{\alpha}{\alpha + \beta}$
+
+Using this formula, I will try to derive the following do some guessing and checking to figure out what values make sense as alpha and beta.
+
+a. Friend applies to a job and says: I think I have a 40% chance of getting the job, but I'm pretty unsure. When pressed, they put their chances between 20% and 60%
+
+0.4 = alpha / (alpha  + beta)
+
+alpha = 2/3 * beta
+
+Using this ratio, I'll guess and check a few values:
+
+```{r}
+plot_beta(40,60)
+```
+
+This looks close to what we want.
+
+b. A scientist has created a new test for a rare disease. They expect that the test is accurate 80% of the time with a variance of 0.05.
+
+Using the same formula as above give:
+
+alpha = 4 * beta
+
+
+```{r}
+plot_beta(80,20)
+```
+
+If we were to take this, the variance would be:
+
+(20 * 80) / ((20 + 80)^2 * (20 + 80 + 1)) = 0.00158
+
+This is too low for the variance we were given (0.05).
+
+Trying another set of values:
+```{r}
+plot_beta(60,15)
+```
+
+This gives a variance of 0.0021. This is closer but still a ways off.
+
+Trying a new value:
+```{r}
+plot_beta(4,1)
+```
+
+This gives 0.027. So lower is better. Trying another one!
+
+```{r}
+plot_beta(2,0.5)
+```
+
+This gives variance of 0.0457 which is close enough!!
+
+c. Aunt Jo is a successful mushroom hunter. She boasts that 'I expect to find enough mushrooms to feed myself and my co-workers 90% of time, but if I had to give you a likely range, it would be between 85% - 100% of the time.
+
+Using the above formula:
+
+alpha = 9 * beta
+
+Trying some values here:
+```{r}
+plot_beta(9,1)
+```
+
+This looks to give the range we want.
+
+d. Sal just interviewed for a job and doesn't know how to describe their chances of getting an offer. They say, I either really impressed them and they are absolutely going to hire me, or I made a terrible impression and they are burning my resume as we speak
+
+So this makes me think they have no clue their chances and the variance is very large. I would think this looks like a pretty fat bell curve: 
+
+```{r}
+plot_beta(5,5)
+```
+
+
+
+### Question 3.2: Tuning Beta part II
+
+Tune appropriate Beta prior model for each situation:
+
+a. Friend says you have a 80% chance of getting a full nights sleep and put their chances between 70% and 90%.
+
+alpha = 4 * beta
+
+Now I'm going to use the method from class to get the right beta using the ratio above:
+```{r}
+p <- 0.8
+n <- 100
+
+quantile(rbeta(10000,p*n,(1-p)*n),c(0.05,0.95))
+```
+
+This gives 73% to 86% which is close but not quite there. Trying another n:
+
+```{r}
+p <- 0.8
+n <- 75
+
+quantile(rbeta(10000,p*n,(1-p)*n),c(0.05,0.95))
+```
+
+This gives 72% and 87%. Closer still:
+
+```{r}
+p <- 0.8
+n <- 50
+
+quantile(rbeta(10000,p*n,(1-p)*n),c(0.05,0.95))
+
+```
+
+This gives 70% and 89% which is close enough! So the Beta is: Beta(40,10). I'm going to check this against the plot beta:
+
+```{r}
+plot_beta(40,10)
+```
+
+
+b. A scientist created a new test for a rare disease that's 90% accurate with a variance of 0.08:
+
+alpha = 9 * beta
+
+Trying Beta(.9,.1) gave me a variance of 0.045 which is still too low. 
+Trying Beta(0.45,0.05) gave me a variance of 0.06 which is closer but still too low. 
+
+Trying Beta(0.18, 0.02) gives me variance 0.075 which is close enough!
+```{r}
+plot_beta(0.18,0.02)
+```
+
+
+c. Max plays Animal Crossing and tell you the probability of playing Animal Crossing is between 75% and 95% but most likely around 85%
+
+alpha = 5.67 * beta
+
+```{r}
+plot_beta(119,21)
+```
+
+Looks great! Nice range that looks to match.
+
+d. The bakery in East Hampton, MA often runs out of croissants on Sundays. Ben guesses that by 10am, there is a 30% chance they run out, but is pretty unsure about that guess.
+
+So the mean is around 30 and the range is pretty wide.
+
+alpha = 3/7 * beta
+
+```{r}
+plot_beta(6,14)
+```
+
+This provides as plot that fits those characteristics.
+
+### Question 3.3: I don't know
+
+You want to specify a Beta prior for a situation where the parameter is unknown. You think its equally likely to be anywhere between 0 and 1. 
+
+a. Specify and plot the appropriate Beta prior model. 
+
+This sounds like a uniform distribution, which has a Beta(1,1)
+
+```{r}
+plot_beta(1,1)
+```
+
+
+b. What is the mean of the Beta prior that you specified? Explain why that does or doesn't align with having no clue
+
+The mean we can get from our formula:
+
+$E(\pi) = \frac{1}{(1 + 1)} = 0.5$
+
+This mean of 0.5 makes sense with having no clue. Value will average out to the middle.
+
+c. What is the standard deviation of the Beta prior you specified?
+
+The standard deviation we can get from our formula as well:
+
+$Var(\pi) = \frac{1*1}{((1+1)^2 * (1+1+1))} = \frac{1}{(4 * 3)} = \frac{1}{12}$
+
+$SD(\pi) = \frac{1}{12}^{0.5} = 0.2886751$
+
+d. Specify and plot an examples of Beta prior that has a smaller standard deviation than the one you specified
+
+A Beta that has the same mean and a smaller SD is Beta(2,2)
+
+```{r}
+plot_beta(2,2)
+```
+
+
+e. Specify and plot an example of the Beta prior that has a larger standard deviation that the one you specified.
+
+A Beta with the same mean and a larger SD is Beta(0.5,0.5)
+
+```{r}
+plot_beta(0.5,0.5)
+```
+
+
+
+### Question 3.4: Which Beta? Part I
+
+Match the Betas with their graphs:
+
+a) Beta (0.5,0.5)
+b) Beta (2,2)
+c) Beta (6,2)
+d) Beta(1,1)
+e) Beta(0.5,6)
+f) Beta(6,6)
+
+
+### Question 3.5: Which Beta? Take II
+
+Match the Betas with their graphs
+
+a) Beta(1,0.3)
+b) Beta(3,3)
+c) Beta(5,6)
+d) Beta(2,1)
+e) Beta(4,2)
+f) Beta(6,3)
+
+
+### Question 3.6: Beta Properties
+
+Looking at the beta models from Question 3.4
+
+a. Which beta model has the smallest and biggest means? Plot and calculate it:
+
+Plot c - Beta(6,2) - has the biggest mean 
+
+Plot e - Beta(0.5,6) - has the smallest mean
+
+```{r}
+mean_c <- 6 / (6 + 2)
+mean_e <- 0.5 / (0.5 + 6)
+
+mean_c
+mean_e
+
+plot_beta(6,2)
+plot_beta(0.5,6)
+```
+
+b. Which beta model has the smallest and biggest mode?
+
+The formula for the mode is: $Mode(\pi) = \frac{\alpha - 1}{\alpha + \beta - 2}$ when \alpha and \beta are over 1. 
+
+```{r}
+mode_a <- (-.5)/(-1)
+mode_b <- 1 / (2)
+mode_c <- 5 / 6
+mode_d <- 0
+mode_e <- -.5 / 4.5
+mode_f <- 5/10
+
+mode_a
+mode_b
+mode_c
+mode_d
+mode_e
+mode_f
+```
+
+Graph c (Beta(6,2)) has the largest mode. 
+Graph e (Beta(0.5,6) has the smallest. 
+
+
+*This is giving me the value we got from the Bayes Rules package before reloading it in class. I believe that the mode formula given in the text only works for alpha and beta over 1*
+
+c. Which beta model has the smallest and largest standard deviation?
+
+Using the variance formula and then square-rooting it will give us the SD for each of these:
+
+$Var(\pi) = \frac{\alpha\beta}{(\alpha + \beta)^2 * (\alpha + \beta + 1)}$
+
+```{r}
+SD_a <- sqrt(0.25 / (1 * 2))
+SD_b <- sqrt(4 / (16*5))
+SD_c <- sqrt(12 / (64*9))
+SD_d <- sqrt(1 / (4*3))
+SD_e <- sqrt(3 / (42.25 *7.5))
+SD_f <- sqrt(36 /(144*13))
+
+
+SD_a
+SD_b
+SD_c
+SD_d
+SD_e
+SD_f
+```
+
+The largest SD is for graph a, Beta(0.5,0.5); 
+The smallest SD is for graph e, Beta(0.5,6)
+
+
+### Question 3.7: Using R for Beta
+
+Use plot_beta and summarize_beta to confirm answers to exercise 3.6
+
+```{r}
+plot_beta(0.5,0.5)
+summarize_beta(0.5,0.5)
+```
+
+
+```{r}
+plot_beta(2,2)
+summarize_beta(2,2)
+```
+
+
+```{r}
+plot_beta(6,2)
+summarize_beta(6,2)
+```
+
+
+```{r}
+plot_beta(1,1)
+summarize_beta(1,1)
+```
+
+
+```{r}
+plot_beta(0.5,6)
+summarize_beta(0.5,6)
+```
+
+
+```{r}
+plot_beta(6,6)
+summarize_beta(6,6)
+```
+
+
+This confirms that the largest and smallest mean is from charts (c) and (e) respectively.
+The largest and smallest mode is from charts (c) and (e) respectively.
+The largest standard deviation and smallest is from charts (a) and (e) respectively.
+
+
+### Question 3.9: Intepreting Priors
+
+Let $\pi$ be the proportion of US residents that prefer the term 'pop.' Two different beverage salespeople from different regions have different priors for $\pi$. The first from North Dakota specifies Beta(8,2) as prior. The second in Louisiana specifies Beta(1,20) as prior. 
+
+a. Calculate the prior mean, mode and SD for each salesperson.
+
+I'll do this using the following formulas:
+
+$E(\pi) = \frac{\alpha}{\alpha + \beta}$
+$Mode(\pi) = \frac{\alpha - 1}{\alpha + \beta - 2}$
+$Var(\pi) = \frac{\alpha\beta}{(\alpha + \beta)^2 * (\alpha + \beta + 1)}$
+
+```{r}
+mean_ND <- 8 / (8  + 2)
+mean_L <- 1 / (1 + 20)
+
+mode_ND <- (8 - 1) / (8 + 2 - 2)
+mode_L <- (1 - 1) / (1 + 20 -2)
+
+sd_ND <- ((8*2) / (((8+2)^2) * (8 + 2 + 1)))^0.5
+sd_L <- ((1*20) / (((1 + 20)^2) * (1 + 20 + 1)))^0.5
+
+mean_ND
+mean_L
+
+mode_ND
+mode_L
+
+sd_ND
+sd_L
+```
+
+So we have the mean, mode and sd for North Dakota as 0.8, 0.875 and 0.12 respectively.
+For Louisiana the mean, mode, and sd is 0.048, 0, and 0.045 respectively.
+
+
+b. Plot the prior pdfs for both salespeople.
+
+```{r}
+ND_soda <- plot_beta(8,2) + labs(title="ND Prior")
+L_soda <- plot_beta(1,20) + labs(title="Louisiana Prior")
+
+ND_soda
+L_soda
+```
+
+c. Compare, in words, the salespeople's prior understandings about the proportion of people who say 'pop.'
+
+The North Dakota salesperson has an understanding that a large percentage of people say pop. The density is very large for $\pi$ above 80%. By contrast, the Louisiana salesperson believes that very few people say 'pop.' The density is highest from 0% to about 20% and then tappers off.
+
+
+### Question 3.10: Different priors, different posteriors
+
+Now we poll 50 US residents and 12 prefer the term 'pop'
+
+a. Specify the unique posterior model of $\pi$ for both salespeople. 
+
+This puts us in the land of beta-binomial. Here the Y = 12 and n = 50. 
+
+To do this by hand first, I would use the bayes rules formula for North Dakota beta:
+
+$f(\pi|y=12) = \frac{\gamma(8 + 2)}{\gamma(8))*\gamma(2)} * \pi^8 (1-\pi)^2 * {50 \choose 12} * \pi^{12} * (1-\pi)^{38}$
+
+We can drop the constants and this simplifies to: $ = c * \pi^{20} * (1-\pi)^{40}$
+
+This would be equivalent to a posterior kernel with $\alpha$ = 19 and $\beta$ = 39
+
+Let's try and confirm with R:
+```{r}
+summarize_beta_binomial(alpha = 8,beta=2,y=12,n=50)
+```
+
+Confused why this didn't have to be minus 1. But we'll take these values for the posterior.
+
+Now for Louisiana. I'll take the posterior the same way and check it:
+
+$f(\pi|y=12) = \frac{\gamma(1 + 20)}{\gamma(1))*\gamma(20)} * \pi^1 (1-\pi)^{20} * {50 \choose 12} * \pi^{12} * (1-\pi)^{38}$
+
+We can drop the constants and this simplifies to: $ = c * \pi^{13} * (1-\pi)^{58}$
+
+This should give $\alpha$ = 13 and $\beta$ = 58 according to the last try. Now to plot it:
+
+```{r}
+summarize_beta_binomial(alpha=1,beta=20,y=12,n=50)
+```
+
+
+b. Now plot the prior, likelihood and posterior for both salespeople
+
+```{r}
+ND_pop <- plot_beta_binomial(alpha = 8,beta=2,y=12,n=50) + labs(title="ND pop")
+L_pop <- plot_beta_binomial(alpha=1,beta=20,y=12,n=50) + labs(title="Louisiana pop")
+
+ND_pop
+L_pop
+```
+
+c. Compare the salespeoples posterior understanding of $\pi$
+
+The North Dakota salespeople priors were way off from the observed data. So their posterior has shifted significantly to the left of their prior and their posterior is still skewed right from the observed data. 
+
+The Louisiana data was lower than the observed data but closer to that total so the shift is less dramatic between posterior and prior, though still left skewed.
+
+
+### Question 3.11: Regular Bike Ridership
+
+A university wants to know what proportion of students are regular bike riders, $\pi$, so that they can install an appropriate number of bike racks. Since the university is in Cali, staff think that $\pi$ has a mean of 1/4 and mode of 5/22.
+
+a. Specify and plot a Beta model that reflects the staff's prior ideas about $\pi$
+
+$\frac{\alpha}{\alpha + \beta} = 1 /4$
+
+$\frac{\alpha - 1}{\alpha + \beta - 2} = 5 /22$
+
+Using these two formulas, I find that $\alpha$ = 6 and $\beta$ = 18.
+
+Beta(6,18)
+
+```{r}
+plot_beta(6,18)
+```
+
+b. Among 50 students surveyed 15 are regular bike riders. What is the posterior model for $\pi$?
+
+Using R:
+```{r}
+summarize_beta_binomial(alpha=6,beta=18,y=15,n=50)
+```
+
+This gives a posterior = Beta(21,53).
+
+I'm going to plot them all as well:
+```{r}
+plot_beta_binomial(alpha = 6,beta=18,y=15,n=50)
+```
+
+
+c. The mean, mode and standard deviation are:
+
+mean = 0.284
+mode = 0.278
+sd = 0.0521
+
+d. Does the posterior model more closely reflect the prior info or the data?
+
+The posterior is pretty split between the prior and the data. It looks a bit more like the incoming data. The certainty of the university was modest and the survey data n was also modest, so the posterior was pretty balanced between the two.
+
+### Question 3.12: Same-sex marriage
+
+A 2017 survey found that 10.2% of LGBT adults in the US were married to a same-sex spouse. Now its 2020, and Bayard guesses that $\pi$, the percent of LGBT adults in the US who are married to a same-sex spouse most likely increased to about 15% but could range from 10% to 25%
+
+a. Identify and plot a Beta model that reflects their prior idea about $\pi$
+
+For this we're going to take the mean to be 0.15. Using the following formulas I'll find an $\alpha$ and $\beta$:
+
+$\alpha$ = .15/.85 * $\beta$
+
+Trying it:
+```{r}
+plot_beta(3,17)
+```
+
+This doesn't quite give a range we want. Now I'll try a different value:
+```{r}
+plot_beta(12,68)
+```
+
+This looks closer to the range we want.
+
+b. Bayard wants to update his prior, so he randomly selects 90 US LGBT adults and 30 of them are marries to same-sex partners. What is the posterior model for $\pi$?
+
+So this provides a y = 30 and n = 90. We can use R to calculate the posterior model:
+```{r}
+summarize_beta_binomial(alpha = 12,beta=68,y=30,n=90)
+```
+
+
+c. Calculate the posterior mean, mode, and standard deviation of $\pi$
+
+This provides the posterior mean, mode, and standard deviation, but I can also do this 'by hand':
+```{r}
+#mean
+42 / (42+128)
+
+#mode
+41 / (42+128 -2)
+
+#SD
+
+sqrt((42*128) / (((42+128)^2) * (42 + 128 + 1)))
+```
+
+Mean = 0.247
+Mode = 0.244
+SD = 0.033
+
+$Mode(\pi) = \frac{\alpha - 1}{\alpha + \beta - 2}$
+$Var(\pi) = \frac{\alpha\beta}{(\alpha + \beta)^2 * (\alpha + \beta + 1)}$
+
+d. Does the posterior model more closely reflect the prior information or the data? Explain reasoning.
+
+```{r}
+plot_beta_binomial(alpha = 12,beta=68,y=30,n=90)
+```
+
+
+The posterior model looks a bit closer to the data than the prior information. The incoming data is from a decent sized n, but the prior was pretty strong. Overall the posterior is pretty split between the two, weighing each.
+
+### Question 3.13: Knowing someone is transgender
+
+In 2016, Pew found that 30% of US adults are aware that they know someone who is transgender. In the 2020s, Sylvia believes that the current percentage has increased to between 35% and 60%. 
+
+a. Identify and plot a Beta model that reflects the prior
+
+I'm going to assume an even distribution between these values, so Sylvia's proposed mean is about 47.5%
+
+$\alpha$ = .3 / .7 * $\beta$
+
+Using the class method:
+```{r}
+p <- 0.475
+n <- 100
+
+quantile(rbeta(10000,p*n,(1-p)*n),c(0.05,0.95))
+
+```
+
+This gives a range between 39% and 55% which is close but I want it to be broader so I'll decrease n:
+```{r}
+p <- 0.475
+n <- 50
+
+quantile(rbeta(10000,p*n,(1-p)*n),c(0.05,0.95))
+
+```
+
+This gives a range of 36% and 59% which is close enough! This provides a Beta of Beta(23.75,26.25). I'll plot it below:
+```{r}
+plot_beta(23.75,26.25)
+```
+
+
+b. Sylvia collects data showing that 80 of 200 people are aware of someone who is transgender. Specify and plot the posterior model
+
+Now we can estimate the posterior model using the formula I found that is derived from the likelihood formula:
+
+$\alpha$_post = $\alpha$ + y
+$\beta$_post = $\beta$ + (n-y)
+
+$\alpha$_post = 23.75 + 80 = 103.75
+$\beta$_post = 26.25 + (200 - 80) = 146.25
+
+I'll test that this matches and I'll plot the posterior:
+```{r}
+summarize_beta_binomial(alpha = 23.75,beta=26.25,y=80,n=200)
+
+plot_beta_binomial(alpha=23.75,beta=26.25,y=80,n=200)
+```
+
+This gives me the same posterior values for alpha and beta.
+
+c. What is the mean, mode and SD?
+
+mean = 0.415
+mode = 0.414
+SD = 0.0311
+
+d. Describe how the prior and posterior models compare to each other
+
+The posterior is quite different from the prior here. The prior was moderately confident, but we got a fair amount of incoming data, so the data overwhelmed the prior to generate the posterior model. 
+
+### Question 3.14: Summarizing the Beta-Binomial Take I
+
+To find the  y and n values for this, I'll use the formula below:
+
+$f(\pi|y) = \frac{\gamma(\alpha + \beta)}{\gamma(\alpha))*\gamma(\beta)} * \pi^{\alpha} (1-\pi)^{\beta} * {n \choose y} * \pi^{y} * (1-\pi)^{n-y}$
+
+When you simplify, the posterior Beta values can be taken by:
+
+$\alpha$_post = $\alpha$ + y
+
+$\beta$_post = $\beta$ + (n-y)
+
+Taking this rule, y = 11 - 2 = 9, and n = 24 - 3 + 9 = 30. Let's  check if these get us the posterior:
+```{r}
+summarize_beta_binomial(alpha = 2,beta=3,y=9,n=30)
+```
+
+Ayeee!! That works!!! 
+
+
+### Question 3.15: Summarize the beta-binomial take II
+
+Using the same rules as above:
+
+y = 100 - 1 = 99
+n  = 3 - 2 + 99 = 100
+
+```{r}
+summarize_beta_binomial(alpha = 1,beta=2,y=99,n=100)
+```
+
+Amaze.
+
+### Question 3.16: Plotting the beta-binomial take I
+
+a. Describe and compare both the prior and likelihood functions in words
+
+The prior has a high density at a very high $\pi$. This shows that the prior model is pretty confident that values will be around 90% or higher.
+
+The likelihood function has a lower density but at a radically lower value of $\pi$. This is saying that the incoming data gives modest confidence that the value lies around 20%.
+
+b. Describe the posterior model is words. Does it more closely agree with the data or the prior?
+
+The posterior model shows modest confidence that the value lies around 75%. The posterior more closely agrees with the prior. Given how confident the prior was, it has a heavier weight on the posterior model, but given how different the prior and the likelihood are in terms of their place on the graph, the posterior still falls closer to 0 than the prior values around 90%.
+
+c. Provide the specific code you would use to produce a similar plot:
+
+I would need a prior with a high mean and a small likelihood n that produces a ratio of around 20%.
+
+To get this, I might use 90% as mean for the prior and 20% as the mean for the likelihood.
+
+$\alpha$ = 9 * $\beta$
+
+y / n = .2
+
+$\alpha$ = 900
+
+$\beta$ = 100
+
+y = 2
+
+n = 10
+
+Let's see how these values work
+
+```{r}
+plot_beta_binomial(alpha = 900, beta = 100, y = 2,n=10)
+```
+
+Okay, lets up the mean close to 1 for the prior and give a bit more certainty for the incoming data. Also lowering the certainty for the prior so the density gets closer to 30:
+
+alpha = 99 * beta
+
+alpha = 49.5
+
+beta = 0.5
+
+y = 4
+
+n = 20
+
+```{r}
+plot_beta_binomial(alpha=49.5,beta=.5,y=4,n=20)
+```
+
+This looks pretty close to the graph provided.
+
+### Question 3.17: Plotting the beta-binomial take II
+
+a. Describe and compare the prior and likelihood function in words.
+
+The prior conveys little certainty about where the data will lie. It has a mean of 0.5 and the distribution is very wide, spanning basically all of the possibly values of $\pi$.
+
+The likelihood function has more confidence in values of $\pi$ closer to 10%. It's pretty confident the value is between 0% and 25%.
+
+b. Describe the posterior model in words. Does it more closely agree with the data or the prior?
+
+The posterior is very close to the data / likelihood. It also gives a mean around 12%-15% and a range between about 0% and 30%. This makes sense because we had very little information from the prior.
+
+c. Provide the code for likely for this plot.
+
+With a mean of 0.5, alpha and beta are equal. 
+
+If we make the mean of the data around 10%, we can try values for y and n below that match that:
+
+alpha = 3
+
+beta = 3
+
+y = 3
+
+n = 30
+
+```{r}
+plot_beta_binomial(alpha = 3,beta=3,y=3,n=30)
+```
+
+That actually looks pretty good, except the density can be higher for the likelihood, so I'll up it a bit:
+```{r}
+plot_beta_binomial(alpha=3,beta=3,y=4,n=40)
+```
+
+That looks close to me! 
+
+
+### Question 3.18: More Beta-Binomial
+
+a. Patrick has a Beta(3,3) prior for $\pi$, the probability that someone in their town attended a protest in June 2020. In their survey, 30 of 40 attended a protest. Summarize and plot this in R:
+
+```{r}
+summarize_beta_binomial(alpha = 3,beta=3,y=30,n=40)
+
+plot_beta_binomial(alpha=3,beta=3,y=30,n=40)
+```
+
+
+b. Harold takes the same prior but is in a different town. Harold gets a survey of 15 of 20 who attended a protest. Get the summary and plot:
+
+```{r}
+summarize_beta_binomial(alpha=3,beta=3,y=15,n=20)
+
+plot_beta_binomial(alpha=3,beta=3,y=15,n=20)
+```
+
+Both Patrick and Harold's posteriors look fairly similar. Patrick's has a slightly higher mean and mode. Harold's model has a higher standard deviation. The similarities are because both of their surveys provide the same rate of success, and the differences are because Patrick had a larger sample size for his data so there is a higher certainty of success.
