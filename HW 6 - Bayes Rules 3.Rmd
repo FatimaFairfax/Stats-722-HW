@@ -422,7 +422,7 @@ To do this by hand first, I would use the bayes rules formula for North Dakota b
 
 $f(\pi|y=12) = \frac{\gamma(8 + 2)}{\gamma(8))*\gamma(2)} * \pi^8 (1-\pi)^2 * {50 \choose 12} * \pi^{12} * (1-\pi)^{38}$
 
-We can drop the constants and this simplifies to: $c * \pi^{20} * (1-\pi)^{40}$
+We can drop the constants and this simplifies to: c * $\pi$^20 * (1-$\pi$)^40
 
 This would be equivalent to a posterior kernel with $\alpha$ = 19 and $\beta$ = 39
 
@@ -437,7 +437,7 @@ Now for Louisiana. I'll take the posterior the same way and check it:
 
 $f(\pi|y=12) = \frac{\gamma(1 + 20)}{\gamma(1))*\gamma(20)} * \pi^1 (1-\pi)^{20} * {50 \choose 12} * \pi^{12} * (1-\pi)^{38}$
 
-We can drop the constants and this simplifies to: $c * \pi^{13} * (1-\pi)^{58}$
+We can drop the constants and this simplifies to: c * $\pi$^13 * (1-$\pi$)^58
 
 This should give $\alpha$ = 13 and $\beta$ = 58 according to the last try. Now to plot it:
 
