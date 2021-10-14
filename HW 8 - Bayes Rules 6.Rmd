@@ -34,15 +34,9 @@ You can change step 1 to define grids that have different amounts of segmentatio
 
 ## Question 6.2: Trace plot diagnostics
 
-*For each MCMC simulation scenario, sketch what a single chain trace plot might look like for each simulation:*
+For each MCMC simulation scenario, sketch what a single chain trace plot might look like for each simulation:
 
-a. The chain is mixing too slowly
-
-b. The chain has high correlation
-
-c. The chain has a tendency to get "stuck"
-
-d. The chain has no problems
+![Different Mixing Scenarios](/Users/fatimafairfax/Desktop/Stats - Complete HW Files/HW8_Q6_2.jpeg)
 
 
 ## Question 6.3: MCMC Woes
@@ -74,13 +68,13 @@ b. Why are MCMC simulations helpful?
 
 When the theta values become too complex to feasibly get a posterior model, MCMC allows you to run iterations that allow you to approximate the posterior
 
-*c. What are the benefits of using RStan?*
+c. What are the benefits of using RStan?
 
-It uses hamiltonian-hasting monte carlo which helps to discard bad proposals in the markov chain process. Rejected samples get tossed and we only use accepted values in the sample. 
+RStan allows us to define a Bayesian model structure and simulate the posterior. It has the ability to run the MCMC algorithm to get an approximate sample based on different distributions specified in the RStan notation. This also produces different ways to visualize the posterior and assess for the accuracy of the model with different diagnostic techniques. 
 
-*d. What don't you understand about the chapter?*
+d. What don't you understand about the chapter?
 
-Everything lol. 
+After class I actually feel pretty good about the concepts in the chapter. 
 
 
 ## Question 6.5: Beta-binomial grid approximation
@@ -200,8 +194,6 @@ post_sample <- sample_n(grid_data,size=10000,
 
 Then we can see the graph of the posterior:
 ```{r}
-post_sample
-
 ggplot(post_sample,aes(x=lambda_grid)) +
   geom_histogram(aes(y=..density..),color="white") +
   stat_function(fun=dgamma,args=list(20,5))+
@@ -227,8 +219,6 @@ set.seed(369)
 
 post_sample <- sample_n(grid_data,size=10000,
                         weight=posterior,replace=TRUE)
-
-post_sample
 
 ggplot(post_sample,aes(x=lambda_grid)) +
   geom_histogram(aes(y=..density..),color="white") +
@@ -308,17 +298,18 @@ With more intervals we can see that the graph has higher density between 8 and 9
 
 a. Describe a situation in which we would want to have inference for multiple parameters
 
-This is like the Michelle polling example, when you want to get a posterior that involves multiple nested parameters (e.g., voting patterns in multiple states.) Another example would be if you wanted to look at...
+This is like the Michelle polling example, when you want to get a posterior that involves multiple nested parameters (e.g., voting patterns in multiple states.) Another example would be if you wanted to look at win probabilities across a football league looking at multiple teams with many factors influencing wins for each individual team. 
 
-*b. Explain how dimensionality can affect grid approximation and why this is a curse*
+b. Explain how dimensionality can affect grid approximation and why this is a curse
 
+Grid approximation is dependent on the size of the grid. The finer the grid, the better the approximation. However, if you have two dimensions as opposed to one, the amount of grids values you have to check increases to the power of 2. If you have three dimensions it increases to the power of 3. This quickly gets out of control. 
 
 
 ## Question 6.9: Comparing MCMC to grid approximation
 
-*a. What drawbacks do MCMC and grid approximation share?*
+a. What drawbacks do MCMC and grid approximation share?
 
-
+Both MCMC and grid approximation rely on guess and check which can get more complicated the more complex the model and has room for error in the size of the grid established or the amount of iterations.
 
 b. What advantages do MCMC and grid approximation share?
 
@@ -328,9 +319,9 @@ c. What is an advantage of grid approximation over MCMC?
 
 Grid approximation takes an independent sample of theta from a discrete approximation of the posterior.
 
-*d. What is an advantage of MCMC over grid approximation?*
+d. What is an advantage of MCMC over grid approximation?
 
-MCMC has more flexibility for more complicated models 
+MCMC has more flexibility for more complicated models and runs a number of chains to increase the the power of approximations. 
 
 ## Question 6.10: Is it a Markov Chain?
 
@@ -355,6 +346,8 @@ Use the given info to define the Bayesian model structure using the correct RSta
 
 a. Y|pi ~ Bin(20,pi) with pi ~ Beta(1,1)
 
+```{r eval=FALSE}
+bin_model = '
 data {
 int<lower = 0, upper = **number of observations**> Y;
 }
@@ -365,10 +358,14 @@ model {
 Y ~ binomial(20,pi);
 pi ~ beta(1,1);
 }
+'
+```
 
 
 b. Y|lambda ~ Pois(lambda) with lambda ~ Gamma(4,2)
 
+```{r eval=FALSE}
+gamma_model ='
 data {
 int<lower = 0> Y[**number of events**];
 }
@@ -379,10 +376,14 @@ model {
 Y ~ poisson(lambda);
 lambda ~ gamma(4,2);
 }
+'
+```
 
 
 c. Y|mu ~ N(mu,1^2) with mu ~ N(0,10^2)
 
+
+```{r eval=FALSE}
 normal_model = '
 data {
     vector[**this is the size of the data vector**] Y;
@@ -395,6 +396,7 @@ model {
     mu ~ normal(10,1.2);
 }
 '
+```
 
 ## Question 6.12: MCMC with RStan: Steps 1 and 2
 
@@ -402,7 +404,8 @@ Use the given info to (1) define the Bayesian model structure, and (2) simulate 
 
 a. Y|pi ~ Bin(20,pi) with pi ~ Beta(1,1) with Y = 12
 
-define the model
+```{r eval=FALSE}
+#define the model
 
 bb_model <- "
 data {
@@ -417,14 +420,16 @@ pi ~ beta(1,1);
 }
 "
 
-simulate the posterior
+#simulate the posterior
 
 bb_sim <- stan(model_code = bb_model,data=list(Y=12),chains=4,iter=5000*2,seed=369)
+```
 
 
 b. Y|lambda ~ Pois(lambda) with lambda ~ Gamma(4,2) with Y = 3
 
-define the model
+```{r eval=FALSE}
+#define the model
 
 gp_model = "
 data {
@@ -441,10 +446,14 @@ lambda ~ gamma(4,2);
 
 gp_sim <- stan(model_code = gp_model, data=list(Y=c(3,**number of trials**)),
                chains=4,iter=5000*2,seed=369)
+```
+
+
 
 c. Y|mu ~ N(mu,1^2) with mu ~ N(0,10^2)
 
-define the model
+```{r eval=FALSE}
+#define the model
 
 normal_model = '
 data {
@@ -459,11 +468,11 @@ model {
 }
 '
 
-simulate the posterior
+#simulate the posterior
 
 d <- list(Y = c(7.1,8.9,8.4,8.6))
 nm_sim <- stan(model_code = normal_model, data = d, chains = **number**, iter = **number * 2 **, seed = 369)
-
+```
 
 
 ## Question 6.13: MCMC with RStan: Beta-Binomial
@@ -472,7 +481,7 @@ Consider the beta-binomial model for pi with Y|pi ~ Bin(n,pi) and pi ~ Beta(3,8)
 
 a. Simulate the posterior model of pi with RStan using 3 chains and 12000 iterations per chain
 
-```{r}
+```{r results='hide'}
 #step 1: define the model
 
 bb_model <- "
@@ -522,7 +531,7 @@ Repeat the above exercise for a Beta-Binomial model with Y|pi ~ Bin(n,pi) and pi
 
 a. 
 
-```{r}
+```{r results='hide'}
 #step 1: define the model
 
 bb_model <- "
@@ -575,7 +584,7 @@ Consider the Gamma-Poisson model with Yi | lambda ~ Pois(lambda) and lambda ~ Ga
 
 a. Simulate the posterior model of lambda with RStan using 4 chains and 10000 iterations per chain
 
-```{r}
+```{r results='hide'}
 #step 1: define the model
 
 gp_model <- "
@@ -637,7 +646,7 @@ These values feel consistent with the density plot we produced with MCMC.
 Do 6.15 again with lambda ~ Gamma(5,5) prior model
 
 a. 
-```{r}
+```{r results='hide'}
 #step 1: define the model
 
 gp_model <- "
@@ -696,7 +705,7 @@ Repeat 6.15 for the Normal-Normal with Yi|mu ~ N(mu,1.3^2) and mu ~ (10,1.2^2). 
 
 a. Simulate the posterior model using 4 chains and 10000 iterations 
 
-```{r}
+```{r results='hide'}
 #define the model
 
 normal_model = '
@@ -736,7 +745,7 @@ c. What seems to be the posterior value for mu?
 
 This appears to be a bit under 9
 
-*d. How does the MCMC approximation compare to the actual posterior?*
+d. How does the MCMC approximation compare to the actual posterior?
 
 Taking from chapter 5, the posterior values of a normal distribution is: $N(\theta\frac{\sigma^2}{n\tau^2 + \sigma^2} + y\frac{n\tau^2}{n\tau^2 + \sigma^2},\frac{\tau^2\sigma^2}{n\tau^2 + \sigma^2})$
 
@@ -752,6 +761,27 @@ n = 4
 y_mean = 7.1 + 8.9 + 8.4 + 8.6 / 4 = 8.25
 
 
+mu_posterior = theta_prior * (sigma^2 / n*tau^2 + sigma^2) + y_mean * (n*tau^2 / n*tau^2 + sigma^2)
+
+sig_posterior = (tau^2 * sigma^2) / (n*tau^2 + sigma^2)
+
+```{r}
+sig_pr <- 1.3^2
+theta <- 10
+tau_pr <- 1.2^2
+n <- 4
+y_mean <- 8.25
+
+
+mu_post <-  (theta * (sig_pr / (n*tau_pr + sig_pr))) + (y_mean * (n*tau_pr / (n*tau_pr + sig_pr)))
+
+sig_post = (tau_pr * sig_pr) / ((n*tau_pr) + sig_pr)
+
+mu_post
+sig_post
+```
+
+This is close to my guess of around 9 for mu.
 
 
 ## Question 6.18: MCMC with RStan: Normal-Normal once again
@@ -800,6 +830,32 @@ c. What seems to be the most posterior plausible value for mu?
 
 This shows mu is a little below -10, let's say -10.5
 
-*d. How does the MCMC compare to the actual posterior approximation?*
+d. How does the MCMC compare to the actual posterior approximation?
+
+Using the same approach as the above. 
+
+The y_mean = -10.1 + 5.5 + 0.1 + -1.4 + 11.5 / 5 = 1.12
+n = 5
+
+Yi|mu ~ N(mu, 8^2) and mu ~ N(-14,2^2)
+
+```{r}
+sig_pr <- 8^2
+theta <- -14
+tau_pr <- 2^2
+n <- 5
+y_mean <- 1.12
+
+
+mu_post <-  (theta * (sig_pr / (n*tau_pr + sig_pr))) + (y_mean * (n*tau_pr / (n*tau_pr + sig_pr)))
+
+sig_post = (tau_pr * sig_pr) / ((n*tau_pr) + sig_pr)
+
+mu_post
+sig_post
+```
+
+This is really spot on for the mu!! Wow, I'm so good at reading graphs!!
+
 
 
