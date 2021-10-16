@@ -104,22 +104,15 @@ grid_data <- grid_data |>
 grid_data |> 
   summarize(sum(unnormalized),sum(posterior))
 
-#step 4: draw a sample
-
-set.seed(369)
-
-post_sample <- sample_n(grid_data,size=10000,weight=posterior, replace=TRUE)
-
-post_sample |> 
-  tabyl(pi_grid) |> 
-  adorn_totals("row")
-
-ggplot(post_sample,aes(x=pi_grid)) +
-  geom_histogram(aes(y=..density..),color="white") +
-  stat_function(fun=dbeta,args=list(5,16)) +
-  lims(x=c(0,1))
+#plot it out:
+ggplot(grid_data, aes(x = pi_grid, y = posterior)) + 
+  geom_point() + 
+  geom_segment(aes(x = pi_grid, xend = pi_grid, y = 0, yend = posterior))
 
 ```
+
+With such a small grid, this isn't very useful, though we do know that most of the density is at 0.25. Or more specifically that its likely between 0 and 0.5. 
+
 
 b. Repeat part a using a grid of 201:
 ```{r}
@@ -133,7 +126,7 @@ grid_data <- grid_data |>
   mutate(prior = dbeta(pi_grid, 3, 8),
        likelihood = dbinom(2,10,pi_grid))
 
-#step 3: calculate the products of prior and likelihoods
+#step 3: approximate the posterior
 
 grid_data <- grid_data |> 
   mutate(unnormalized = likelihood * prior,
@@ -143,22 +136,15 @@ grid_data <- grid_data |>
 grid_data |> 
   summarize(sum(unnormalized),sum(posterior))
 
-#step 4: draw a sample
+#plot it all out
 
-set.seed(369)
+ggplot(grid_data, aes(x = pi_grid, y = posterior)) + 
+  geom_point() + 
+  geom_segment(aes(x = pi_grid, xend = pi_grid, y = 0, yend = posterior))
 
-post_sample <- sample_n(grid_data,size=10000,weight=posterior, replace=TRUE)
-
-post_sample |> 
-  tabyl(pi_grid) |> 
-  adorn_totals("row")
-
-ggplot(post_sample,aes(x=pi_grid)) +
-  geom_histogram(aes(y=..density..),color="white") +
-  stat_function(fun=dbeta,args=list(5,16)) +
-  lims(x=c(0,1))
 ```
 
+This looks much better with a larger grid.
 
 ## Question 6.6: Gamma-Poisson grid approximation
 
@@ -192,14 +178,14 @@ post_sample <- sample_n(grid_data,size=10000,
 ```
 
 
-Then we can see the graph of the posterior:
+Then we can see the graph of the posterior. We get the posterior gamma function by adding the sum of Y successes to the s value and the n observations to the r value. So the posterior we are using in this case will be Gamma(20 + 1, 5+3) = Gamma(21,8)
 ```{r}
 ggplot(post_sample,aes(x=lambda_grid)) +
   geom_histogram(aes(y=..density..),color="white") +
-  stat_function(fun=dgamma,args=list(20,5))+
+  stat_function(fun=dgamma,args=list(21,8))+
   lims(x=c(0,8))
 ```
-
+This again gives us very little info given how large the grid intervals are.
 
 b. Repeat part a with a grid of 201 equally spaced values
 
@@ -222,9 +208,11 @@ post_sample <- sample_n(grid_data,size=10000,
 
 ggplot(post_sample,aes(x=lambda_grid)) +
   geom_histogram(aes(y=..density..),color="white") +
-  stat_function(fun=dgamma,args=list(20,5))+
+  stat_function(fun=dgamma,args=list(21,8))+
   lims(x=c(0,8))
 ```
+
+This gives a much better match with the approximation. 
 
 
 ## Question 6.7: Normal-Normal grid approximation
@@ -790,7 +778,7 @@ Repeat 6.17 with Yi|mu ~ N(mu, 8^2) and mu ~ N(-14,2^2). Suppose that on n = 5 i
 
 a. Simulate the posterior model with 4 chains and 10000 iterations per chain
 
-```{r}
+```{r results='hide'}
 #define the model
 
 normal_model_2 = '
