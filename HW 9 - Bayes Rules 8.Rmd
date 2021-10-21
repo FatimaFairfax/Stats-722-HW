@@ -31,7 +31,7 @@ If we only focus on the central tendency, we may get equivalent means for multip
 
 b. The 95% credible interval for lambda is (1,3.4). How would you interpret this?
 
-*This means that there is a 95% posterior probability that the lambda value is somewhere between 1 and 3.4*
+This means that there is a 95% posterior probability that the lambda value is somewhere between 1 and 3.4
 
 
 ## Question 8.3: Hypothesis Testing?
@@ -77,6 +77,7 @@ a. What two types of variability do posterior prediction models incorporate? Def
 
 There is *sampling variability* which is the variance in the realized values of the random sampled observations.
 
+
 There is *posterior variability* which is that there are multiple plausible values for pi. This means we have to account for all the outcomes we could get in the plausible pi values.
 
 b. Describe a real-life situation in which it would be helpful to carry out posterior prediction
@@ -86,6 +87,7 @@ Posterior predictions are helpful to estimate a future value based on the previo
 c. Is a posterior predictive model conditional on just the data, just the parameter, or on both the data and the parameter?
 
 The posterior predictive model is conditional on both the data and the parameter.
+
 
 ## Question 8.6: Credible Intervals - Part I
 
@@ -157,13 +159,20 @@ This gives an 80% CI of (-4.3,-1.7)
 
 The highest posterior density approach reports the 95% of posterior values with the highest posterior densities.
 
-*a. Let lambda|y ~ Gamma(1,5). Construct the 95% highest posterior density credible interval for lambda. Represent this interval in a sketch of the posterior pdf.* 
+a. Let lambda|y ~ Gamma(1,5). Construct the 95% highest posterior density credible interval for lambda. Represent this interval in a sketch of the posterior pdf. 
 
 Here I would look at the plot for this distribution:
 
 ```{r}
 plot_gamma(1,5)
 ```
+
+To get the highest density interval for a gamma distribution we can go from the 0th percentile to the 95th percentile:
+```{r}
+qgamma(c(0,0.95),1,5)
+```
+
+This gives a highest density interval of (0,0.599)
 
 
 b. Repeat part a using the middle 95% approach
@@ -175,14 +184,20 @@ qgamma(c(0.025,0.975),1,5)
 
 This gives a 95% CI of (0.0051,0.7378)
 
-*c. Compare the two intervals from part a and b. Are they the same? If not, how do they differ and which is more appropriate here?*
+c. Compare the two intervals from part a and b. Are they the same? If not, how do they differ and which is more appropriate here?
 
+These intervals are not the same. Because this distribution is extremely left skewed, there is higher density to the left than the right, i.e., not centered. Thus, it would be more appropriate in this distribution to use the highest density interval.  
 
-*d. Let mu|y ~ N(-13,2^2). Construct the 95% highest posterior density credible interval for mu*
+d. Let mu|y ~ N(-13,2^2). Construct the 95% highest posterior density credible interval for mu
 
 Let's look at this:
 ```{r}
 plot_normal(-13,2)
+```
+
+Because this is a centered, normal distribution, the 95% CI is the same as the highest density interval. We will find that below. But I will do it here again to illustrate:
+```{r}
+qnorm(c(0.025,0.975),-13,2)
 ```
 
 
@@ -195,7 +210,7 @@ qnorm(c(0.025,0.975),-13,2)
 
 This gives a 95% CI of (-16.92,-9.08)
 
-*f. Compare the two intervals from parts d and e. Are they the same? If not, why not?*
+f. Compare the two intervals from parts d and e. Are they the same? If not, why not?
 
 These are the same because normals are centered distributions, so the 95% highest density interval should always be equal to the middle 95% interval
 
@@ -206,7 +221,7 @@ For parameter pi, suppose you have Beta(1,0.8) prior model and Beta(4,3) posteri
 
 a. What is the posterior probability for the alternative hypothesis?
 
-We can find this using pbeta and the posterior values. **coming back to realize I need to flip this because the formula calculate the pi < value**.
+We can find this using pbeta and the posterior values. **coming back to realize I need to flip this because the formula calculates the pi < value**.
 
 ```{r}
 post_prob <- pbeta(0.4,4,3)
@@ -289,7 +304,7 @@ The posterior odds are 1.11 which favors the alternative hypothesis.
 
 c. Calculate and interpret the prior odds
 
-This is a ration of the prior probability of H_a and H_0
+This is a ratio of the prior probability of H_a and H_0
 
 ```{r}
 prior_probs <- pnorm(5.2,10,10)
@@ -355,7 +370,7 @@ climate <- pulse_of_the_nation |>
 
 head(climate)
 ```
-Now to tally is up:
+Now to tally it up:
 ```{r}
 climate |> 
   group_by(climate_change) |> 
@@ -364,10 +379,13 @@ climate |>
 
 The amount of people who responded 'Not Real At All' is 150. Now I can also add a proportion. Just mathing it, we can use the Y = 150 over the full n = 1000. This provides a proportion of 0.15
 
-*Using R to do this all at once, we can try this:*
+Using R to do this all at once, we can try this:
 
 ```{r}
-
+climate |> 
+  group_by(climate_change) |> 
+  tally() |> 
+  mutate(proportion = n/sum(n))
 ```
 
 
@@ -393,9 +411,9 @@ This gives a 95% CI of (0.129, 0.173). This means that there is a 95% posterior 
 
 Suppose we want to test a claim with hypo testing where 
 
-H_0: pi <= 0.1
+$H_0: \pi <= 0.1$
 
-H_a: pi > 0.1
+$H_a: \pi > 0.1$
 
 a. What decision might you make about these hypos using the credible interval from the previous exercise?
 
@@ -411,7 +429,7 @@ post_probs
 
 So this value feels very wrong...
 
-Ah! This formula is giving the probability that pi is < 0.1 and I need pi > 0.1. So I can take this value minus 1. 
+Ah! This formula is giving the probability that pi is < 0.1 and I need pi > 0.1. So I can take this 1 minus this value. 
 
 ```{r}
 post_probs <- 1-post_probs
@@ -444,7 +462,7 @@ With these two values, I can find the Bayes Factor:
 post_odds / prior_odds
 ```
 
-The Bayes Factor here is 750017.6. This means that the plausibility for the alternative hypothesis increased **dramatically** in light of the observed data. 
+The Bayes Factor here is 750017.6. This means that the plausibility for the alternative hypothesis increased *dramatically* in light of the observed data. 
 
 d. Putting this together, explain your conclusion about pi
 
@@ -570,11 +588,13 @@ c. How close are the approximations in parts a and b to the actual corresponding
 The actual values I got are below:
 
 95% CI of (0.129, 0.173)
+
 posterior probability of pi > 0.1 = 0.999
 
 The approximations from MCMC I got are here:
 
 95% CI (0.129,0.173)
+
 posterior probability of pi > 0.1 = 1
 
 These approximation values are pretty much dead on with the posterior values I calculated with the sample. 
@@ -619,18 +639,24 @@ climate_chain_df |>
 
 This gives a mean of 15 and 95% chance that the figure is between 8 and 23.
 
-*c. Approximate the probability that at least 20 of the 100 people don't believe in climate change*
+c. Approximate the probability that at least 20 of the 100 people don't believe in climate change
 
 We are looking for the following:
 
 $P(Y'>=20|y=150) = \sum_{y'=20}^{100}f(y'|y=150)$
 
-This is the probability that the new observation (Y') will be at least 20 given the observed data gave Y=150. This can be found by a long formula...
-
-$f(y'|y=150) = {100}\choose{y'} * \frac{\Gamma(1003)}{\Gamma(151)*\Gamma(852)} * \frac{\Gamma(151 + y')*\Gamma()}...
-
 $f(y'|y) = \int{f(y'|\pi)f(\pi|y)d\pi}$
 
+We did the work in our simulation to predict 100 values based on the observed data we previously collected: f(y'|y=150). So here, we can sum all of those values (y') between 20 and 100:
+
+```{r}
+predict_20 <- climate_chain_df |> 
+  filter(y_predict>=20)
+
+nrow(predict_20) / nrow(climate_chain_df)
+```
+
+Here this shows that the probability of at least 20 people not believing in climate change is about 12%
 
 ## Question 8.19: Penguins - estimation
 
@@ -666,50 +692,69 @@ data("penguins_bayes")
 
 #get the observations and the sample mean for flipper_length
 penguins <- penguins_bayes |> 
-  select(species,flipper_length_mm) |> 
+  filter(species=="Adelie") |> 
+  drop_na() |> 
   summarize(avg_flip = mean(flipper_length_mm,na.rm=TRUE),
+            sd_flip = sd(flipper_length_mm,na.rm=TRUE),
             species_num = n())
 
 penguins
 ```
 
-This gives that the average of this sample is about 201 and the number of species data points is 344
+This gives that the average of this sample is 190.1 and the number of species data points is 146
 
-*d. In light of the prior and data, calculate and interpret a middle 95% posterior credible interval for mu. First you have to specify a posterior model for mu*
+d. In light of the prior and data, calculate and interpret a middle 95% posterior credible interval for mu. First you have to specify a posterior model for mu
 
-First to calculate a posterior for mu
+First to calculate a posterior for mu. Note this is for mu and not for the full distribution. We can grab the sd for mu from the above summary:
 
 ```{r}
-summarize_normal_normal(200,40,y_bar=200.9152,n=344)
+summarize_normal_normal(200,sd=sqrt(40),y_bar=190.1027,n=146,sigma=6.521825)
 ```
 
 
-This gives a posterior of N(200,40^2)...which is the same...hmmm
+This gives a posterior of N(190.1743,0.289).
 
 To get a 95% credible interval we can use qnorm
 
 ```{r}
-qnorm(c(0.025,0.975),mean=200,sd=40)
+qnorm(c(0.025,0.975),mean=190.1743,sd=0.538)
 ```
 
-This gives a 95% CI of (121.6,278.4). This means that there is a 95% posterior probability that the mean is between 121.6 and 278.4.
+This gives a 95% CI of (189.1,191.2). This means that there is a 95% posterior probability that the mean is between 189.1 and 191.2
 
 
-*## Question 8.20: Penguins - hypothesis testing*
+## Question 8.20: Penguins - hypothesis testing
 
 Continue examining the Adelie penguins
 
 a. Hypothesize that the average Adelie flipper hypo test is between 200mm and 220mm. State this as a formal hypo test
 
-H_0: 
-H_a: 
+$H_0: \mu < 200 | \mu > 220$
 
+$H_a: 200 < \mu < 220$
 
 b. What decision might you make about these hypotheses using the credible interval from the previous exercise
 
+I would be inclined to believe that the null hypothesis is more plausible. The posterior values we get for mu in our data centers around 190 and the variance is extremely small, so the likelihood that it's between 200 and 220 is not very likely. 
+
 c. Calculate and interpret the posterior probability that your hypothesis is true
 
+This is a two sided hypothesis test. We need to evaluate the probability that the value of mu is both above 200 and less than 220. This is a joint probability and we can multiply the probability of both of those conditions to assess the posterior probability. 
+
+
+```{r}
+post_low <- pnorm(200,190.1743,0.538)
+post_high <- 1 - pnorm(220,190.1743,0.538)
+
+post_prob <- post_low * post_high
+post_prob
+```
+
+This gives a posterior probability of 2 for the alternative hypothesis that mu lies between 200 and 220.
+
 d. Putting this together, explain your conclusion about mu
+
+We saw that the posterior model for mu centered around 190 with a very small variance and 95% CI between 189 and 191. Given how tight the estimation was, we are fairly confident in the mu being around 190 and it would not be very plausible to see values for mu far from 190. 
 
 
 ## Question 8.21: Loons - estimation
@@ -722,9 +767,36 @@ This is a Gamma-Poisson because we are dealing with the rate of occurrence over 
 
 b. Your prior understanding is that the typical rate is 2 per 100 hrs with sd = 1 per 100 hrs. Specify a prior model for lambda and explain
 
-I will use s = 2 and r = 100 to keep the units consistent with the units we observed
+Here I will use the following formulas for the Gamma distribution and the values provided to us in this question to arrive at a sensible prior model.
 
-Gamma(2,100)
+avg = s/r
+
+var = s/r^2
+
+sd = sqrt(var)
+
+2 = s/r
+
+1 = sqrt(s) / r
+
+Using these two formulas, I can solve for s and r:
+
+2r = s
+
+1 = sqrt(2r) / r
+
+r = sqrt(2r)
+
+r^2 = 2r
+
+r = 2
+
+
+2 = s/2
+
+4 = s
+
+This gives us a **Gamma(4,2)**
 
 c. The loons data contains counts in different observation periods. How many data points do we have and what's the average loon count?
 
@@ -751,52 +823,55 @@ This gives the average count in 100 hr periods is 1.5 and the observations are 1
 
 d. In light of the prior and data, calculate and interpret a middle 95% posterior credible interval for lambda. First you need to specify posterior model of lambda
 
-Firs to use the summary to find the posterior model:
+First to use the summary to find the posterior model:
 ```{r}
-summarize_gamma_poisson(2,100,sum_y=1.5,n=18)
+summarize_gamma_poisson(4,2,sum_y=1.5*18,n=18)
 ```
 
-This gives a posterior Gamma(3.5,118)
+This gives a posterior Gamma(31,20)
 
 Then using this, we can calculate the 95% CI using qgamma
 ```{r}
-qgamma(c(0.025,0.975),3.5,118)
+qgamma(c(0.025,0.975),31,20)
 ```
 
-*The 95% CI is (0.0072, 0.0679). This means that there is a 95% posterior probability that lambda is between 0.007 and 0.07.*
+The 95% CI is (1.05, 2.14). This means that there is a 95% posterior probability that lambda is between 1.05 and 2.14.
 
 
 ## Question 8.22: Loons - Hypo testing
 
 a. Hypothesize that you anticipate a rate of less than 1 per observation period. State this as a formal hypo test:
 
-H_0: lambda < 1
-H_a: lambda >= 1
+$H_0: \lambda >= 1$
+
+$H_a: \lambda < 1$
 
 b. What decision might you make about these hypos using the credible interval from previous exercise?
 
-The CI we got for lambda were both below 1 by a bit, so we would expect to favor heavily the null hypo
+The CI we got for lambda were both above 1 so I would expect to favor the null hypothesis.
 
-*c. Calculate and interpret the posterior probability that your hypo is true*
+c. Calculate and interpret the posterior probability that your hypo is true
 
 We can get the posterior probability using pgamma and the posterior values for shape and rate
 
 ```{r}
-pgamma(1,3.5,118)
+pgamma(1,31,20)
 ```
 
-Again, we have to flip this probability because this is giving the probability that lambda < 1 as the formula takes it. Meaning that the posterior probability of the alternative hypothesis that lambda >=1 is 0. Let's check out the graph to see if that checks out
+The posterior probability that lambda is less than 1 is not very high (1.3%). This shows that we have high favor for the null hypothesis.
+
+Let's check out the graph to see if that checks out
 
 ```{r}
-plot_gamma(3.5,118)
+plot_gamma(31,20)
 ```
 
-This seems to check out, providing all lambda values under 0.1
+This seems to check out. Most of the distribution is falling above 1, though there is a small piece that falls below 1. 
 
 
 d. Putting this together, explain your conclusion about lambda
 
-
+In our posterior model, we saw that the the mean values for lambda is about 0.275 with an extremely low variance. This supported our alternative hypothesis that lambda will be under 1. In calculating the posterior probability we saw that this checked out providing an extremely high probability in support of the alternative hypo.
 
 ## Question 8.23: Loons with MCMC - simulation
 
@@ -823,7 +898,7 @@ real<lower = 0>lambda;
 }
 model {
 Y ~ poisson(lambda);
-lambda ~ gamma(2,100);
+lambda ~ gamma(4,2);
 }
 "
 
@@ -872,7 +947,7 @@ Using tidy we can get values:
 ```{r}
 tidy(loons_sim,conf.int = TRUE,conf.level=0.95)
 ```
-This provides a 95% CI of (0.164, 0.342)
+This provides a 95% CI of (1.05, 2.12)
 
 
 Now we have to save this as a dataframe before doing more summary:
@@ -892,7 +967,7 @@ loons_chain_df |>
             upper_95 = quantile(lambda,0.975))
 ```
 
-This gives a 95% CI of (0.164,0.342) as well
+This gives a 95% CI of (1.05,2.12) as well
 
 d. Use MCMC to approximate the posterior probability that lambda is < 1
 
@@ -902,21 +977,27 @@ loons_chain_df |>
   tabyl(exceeds)
 ```
 
-This says that the posterior probability that lambda is less than 1 is 1, which is what we found before
+This says that the posterior probability that lambda is less than 1 is about 0.01395 (1.4%).
 
-*e. How close are the approximations to the actual posterior values you calculated?*
+e. How close are the approximations to the actual posterior values you calculated?
 
 Actual calculations:
 
-Posterior probability of lambda < 1 = 1
-95% CI = (0.0072, 0.0679)
-posterior mean = .0297
+Posterior probability of lambda < 1 = 0.01347468
+
+95% CI = (1.05, 2.14)
+
+posterior mean = 1.55
 
 Approximations:
 
-Posterior probability of lambda < 1 = 1
-95% CI = (0.164,0.342)
-posterior mean = 0.245
+Posterior probability of lambda < 1 = 0.01395
+
+95% CI = (1.05,2.12)
+
+posterior mean = 1.548
+
+All of these values are very similar to the calculated values we found before.
 
 
 ## Question 8.24: Loons with MCMC - prediction
@@ -930,7 +1011,7 @@ set.seed(369)
 
 #predict a value of Y' for each lambda value in the chain
 loons_chain_df <- loons_chain_df |> 
-  mutate(y_predict=rpois(n=1,lambda))
+  mutate(y_predict=rpois(n=20000,lambda))
 
 #check it out
 loons_chain_df |> 
@@ -941,10 +1022,11 @@ Then plot it out:
 ```{r}
 #plot 20k predictions
 ggplot(loons_chain_df,aes(x=y_predict)) +
-  stat_count()
+  stat_count() +
+  scale_x_continuous(breaks = seq(0,8,1))
 ```
 
-This gives the most likely value to be 0. 
+This gives the most likely value to be 1. 
 
 b. Summarize your observations of the posterior predictive model of Y'
 
@@ -955,11 +1037,18 @@ loons_chain_df |>
             upper_95 = quantile(y_predict,0.975))
 ```
 
-This provides a mean of 0 and a 95% chance that the number of loons the birdwatcher will see in the next 100-hour period is 0
+This provides a mean of 1.54 and a 95% chance that the number of loons the birdwatcher will see in the next 100-hour period is between 0 and 5
 
 c. Approximate the probability that the birdwatcher observed 0 loons in their next observation period
 
+Here we can employ the technique we used above where we take the sum of our observed values in the model we simulated. We can sum all of the instances where y' was 0 and divide that by the total number of values we observed:
+```{r}
+predict_0 <- loons_chain_df |> 
+  filter(y_predict == 0)
 
+nrow(predict_0) / nrow(loons_chain_df)
+```
 
+Using the data, we can see that the probability that the birdwatcher sees zero birds in their next birdwatching period is about 23%. 
 
 
