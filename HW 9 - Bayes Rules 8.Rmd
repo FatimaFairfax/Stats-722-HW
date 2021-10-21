@@ -1,0 +1,965 @@
+---
+title: "HW 9 - Bayes Rules 8"
+author: "Fatima Fairfax"
+date: "10/19/2021"
+output: html_document
+---
+
+First things first, let's load up!
+
+```{r}
+# Load packages
+library(bayesrules)
+library(tidyverse)
+library(rstan)
+library(bayesplot)
+library(broom.mixed)
+library(janitor)
+```
+
+
+
+## Question 8.1: Posterior Analysis
+
+The three common tasks in a posterior analysis are: 1) estimation, 2) hypothesis testing, and 3) prediction
+
+## Question 8.2: Warming Up
+
+a. In estimating some parameter lambda, what are some drawbacks to only reporting the central tendency of the lambda posterior model?
+
+If we only focus on the central tendency, we may get equivalent means for multiple samples, but we miss information on the spread of the data (the variability) and thus the distributed density of the posterior model.
+
+b. The 95% credible interval for lambda is (1,3.4). How would you interpret this?
+
+*This means that there is a 95% posterior probability that the lambda value is somewhere between 1 and 3.4*
+
+
+## Question 8.3: Hypothesis Testing?
+
+In each situation below, indicate whether the issue could be addressed by using a hypothesis test.
+
+a. Trichelle claims that more than 40% of dogs at the dog park do not have a dog license
+
+Yes, this can use a one-sided hypothesis test with H_0: pi > 0.4 and H_a: pi =< 0.4.
+
+b. Prof is interested in learning about the proportion of students at a large university who have heard of Bayesian statistics
+
+No, this cannot use a hypothesis test because it doesn't contain a hypothesis! 
+c. An environmental justice advocate wants to know if more than 60% of voters in their state support a new regulation
+
+Yes, this can use a hypothesis test with H_0: pi > 0.6 and H_a: pi =< 0.6
+
+d. Sarah is studying text and wants to investigate the number of times that the author uses a certain mode of arguement per page of the text. Based on their other writings she thinks it will be about 3 times per page. She takes a random sample of 90 pages.
+
+Yes...? I think this could use a two sided hypothesis with H_0: lambda = 3 and H_a: lambda != 3.
+
+
+## Question 8.4: Bayes Factor
+
+Answer questions about Bayes Factors for my friend Enrique
+
+a. What are posterior odds?
+
+This is the proportion between the posterior probability of the null hypothesis and the posterior probability of the alternative hypothesis. This accounts for the odds that the alternative hypothesis is more likely than the null hypothesis after having observed data.
+
+b. What are prior odds?
+
+This is the proportion between the prior probability of the null hypothesis and the prior probability of the alternative hypothesis. This accounts for the odds that the alternative hypothesis is more likely than the null hypothesis prior to analyzing observed data. 
+
+c. What's a Bayes Factor and why do we want to calculate it?
+
+The Bayes factor is the posterior odds over the prior odds. The Bayes Factor gives us information about how our understanding has evolved based on the data we observed. A Bayes factor of 1 means that the information has not influenced out understanding. BF > 1 means that the plausibility of H_a increased in light of the data; BF < 1 means that the plausibility of H_a decreased in light of the data.
+
+
+## Question 8.5: Posterior prediction: concepts
+
+a. What two types of variability do posterior prediction models incorporate? Define each type:
+
+There is *sampling variability* which is the variance in the realized values of the random sampled observations.
+
+There is *posterior variability* which is that there are multiple plausible values for pi. This means we have to account for all the outcomes we could get in the plausible pi values.
+
+b. Describe a real-life situation in which it would be helpful to carry out posterior prediction
+
+Posterior predictions are helpful to estimate a future value based on the previous data and prior model you have. This would be useful for hospital occupancy. As in, based on the rate of admissions to a hospital in one month, what is the predicted value of the number of admissions in the coming month. This would help for planning, staffing, and resourcing.
+
+c. Is a posterior predictive model conditional on just the data, just the parameter, or on both the data and the parameter?
+
+The posterior predictive model is conditional on both the data and the parameter.
+
+## Question 8.6: Credible Intervals - Part I
+
+Find the appropriate credible interval using the "middle" approach. We will use R to do this with the qbeta and qgamma codes. 
+
+a. A 95% credible interval for pi with pi|y ~ Beta(4,5)
+
+This will assess the 0.025th and 0.975th percentiles:
+```{r}
+qbeta(c(0.025,0.975),4,5)
+```
+
+This gives a CI of (0.16,0.75)
+
+b. A 60% CI for pi with pi|y ~ Beta(4,5)
+
+This will asses the 0.20th and 0.80th percentiles:
+```{r}
+qbeta(c(0.2,0.8),4,5)
+```
+
+This gives a CI of (0.3,0.58)
+
+c. A 95% CI for lambda with lambda|y ~ Gamma(1,8)
+
+This will assess the 0.025th and 0.975th percentiles:
+```{r}
+qgamma(c(0.025,0.975),1,8)
+```
+
+This gives a CI of (0.003,0.461).
+
+
+
+## Question 8.7: Credible intervals - Part II
+
+Find the appropriate credible interval with the "middle" approach
+
+a. A 99% credible interval of lambda with lambda|y ~ Gamma(1,5)
+
+This is looking at the 0.005th and 0.995th percentiles:
+```{r}
+qgamma(c(0.005,0.995),1,5)
+```
+
+This gives a CI (0.001,1.06)
+
+b. A 95% credible interval of mu with mu|y ~ N(10,2^2)
+
+This will assess the 0.025th and 0.975th percentiles:
+```{r}
+qnorm(c(0.025,0.975),10,2)
+```
+
+This gives a CI of (6.1,13.9). This means that there is a 95% posterior probability that the mean is between 6.1 and 13.9.
+
+
+c. An 80% credible interval of mu with mu|y ~ N(-3,1^2)
+
+This will assess the 0.1th and 0.9th percentiles:
+```{r}
+qnorm(c(0.1,0.9),-3,1)
+```
+
+This gives an 80% CI of (-4.3,-1.7)
+
+
+## Question 8.8: Credible intervals: highest posterior density
+
+The highest posterior density approach reports the 95% of posterior values with the highest posterior densities.
+
+*a. Let lambda|y ~ Gamma(1,5). Construct the 95% highest posterior density credible interval for lambda. Represent this interval in a sketch of the posterior pdf.* 
+
+Here I would look at the plot for this distribution:
+
+```{r}
+plot_gamma(1,5)
+```
+
+
+b. Repeat part a using the middle 95% approach
+
+To get the middle 95% we can use the formula qgamma:
+```{r}
+qgamma(c(0.025,0.975),1,5)
+```
+
+This gives a 95% CI of (0.0051,0.7378)
+
+*c. Compare the two intervals from part a and b. Are they the same? If not, how do they differ and which is more appropriate here?*
+
+
+*d. Let mu|y ~ N(-13,2^2). Construct the 95% highest posterior density credible interval for mu*
+
+Let's look at this:
+```{r}
+plot_normal(-13,2)
+```
+
+
+e. Repeat part d using the middle 95% approach
+
+We can use the qnorm function for this:
+```{r}
+qnorm(c(0.025,0.975),-13,2)
+```
+
+This gives a 95% CI of (-16.92,-9.08)
+
+*f. Compare the two intervals from parts d and e. Are they the same? If not, why not?*
+
+These are the same because normals are centered distributions, so the 95% highest density interval should always be equal to the middle 95% interval
+
+
+## Question 8.9: Hypothesis tests - Part I
+
+For parameter pi, suppose you have Beta(1,0.8) prior model and Beta(4,3) posterior. You want to test null hypothesis pi =< 0.4 versus alternative that pi > 0.4
+
+a. What is the posterior probability for the alternative hypothesis?
+
+We can find this using pbeta and the posterior values. **coming back to realize I need to flip this because the formula calculate the pi < value**.
+
+```{r}
+post_prob <- pbeta(0.4,4,3)
+post_prob <- 1 - post_prob
+post_prob
+```
+
+The posterior probability of the alternative hypothesis is 0.8208.
+
+b. Calculate and interpret the posterior odds
+
+Then we can use this to calculate the posterior odds, which is the probability of H_a over the probability of H_0:
+```{r}
+post_odds <- post_prob / (1 - post_prob)
+post_odds
+```
+
+The posterior odds is 4.58. This means that the odds that the alternative hypothesis is most likely to occur is 4.58. As in, the posterior model favors the alternative hypothesis.
+
+c. Calculate and interpret the prior odds
+
+This can be done using pbeta and the prior values for alpha and beta:
+```{r}
+prior_prob <- pbeta(0.4,1,0.8)
+prior_prob <- 1-prior_prob
+prior_prob
+```
+
+
+The prior probability of the alternative hypothesis is 0.665
+
+Again, we can calculate the prior odds with this:
+```{r}
+prior_odds <- prior_prob / (1-prior_prob)
+prior_odds
+```
+
+The prior odds are 1.98, meaning there was favor for the alternative hypothesis prior to the data being observed as well.
+
+d. Calculate and interpret the Bayes Factor
+
+The Bayes Factor is the posterior odds over the prior odds:
+```{r}
+BF <- post_odds / prior_odds
+BF
+```
+
+This Bayes Factor of 2.31 is over 1. This means that the plausibility of the alternative hypothesis increased in light of the observed data.
+
+e. Putting this together, explain your conclusion about these hypotheses to someone unfamiliar with Bayesian stats:
+
+Here we started with a null hypothesis (pi =< 0.4) and an alternative hypothesis (pi > 0.4). We can calculate the plausibility of the null and alternative hypos using our prior model. The ratio between these two values gives us the odds that we will experience our alternative hypothesis. Once we observe data, we can do the same procedure with our posterior model. We can use the Bayes factor to see the difference in the posterior and prior odds, which can give us information about how much the observed data changed the plausibility of our alternative hypothesis. 
+
+
+## Question 8.10: Hypo tests - Part II
+
+Repeat exercise 8.9 for the following scenario. For parameter mu, suppose you have a N(10,10^2) prior model, a N(5,3^2) posterior, and you wish to test H_0: mu >= 5.2 and H_a: mu < 5.2
+
+a. What is the posterior probability for H_a?
+
+We can get this using the following code:
+
+```{r}
+post_prob <- pnorm(5.2,5,3)
+post_prob
+```
+
+The posterior probability for H_a is 0.527
+
+b. Calculate and interpret the posterior odds
+
+This is a ratio of the posterior probabilities of H_a and H_0
+
+```{r}
+post_odds <- post_prob / (1-post_prob)
+post_odds
+```
+
+The posterior odds are 1.11 which favors the alternative hypothesis.
+
+c. Calculate and interpret the prior odds
+
+This is a ration of the prior probability of H_a and H_0
+
+```{r}
+prior_probs <- pnorm(5.2,10,10)
+
+prior_odds <- prior_probs / (1-prior_probs)
+prior_odds
+```
+
+The prior odds are 0.461 which favors the null hypothesis
+
+d. Calculate and interpret the Bayes Factor
+
+```{r}
+BF <- post_odds / prior_odds
+BF
+```
+
+The BF is 2.411, which is over 1. This means that in light of the observed data the plausibility for the alternative hypothesis increased.
+
+e. Explain your conclusion. 
+
+Here we started with a null hypothesis (mu => 5.2) and an alternative hypothesis (mu < 5.2). We can calculate the plausibility of the null and alternative hypos using our prior model. The ratio between these two values gives us the odds that we will experience our alternative hypothesis. Once we observe data, we can do the same procedure with our posterior model. We can use the Bayes factor to see the difference in the posterior and prior odds, which can give us information about how much the observed data changed the plausibility of our alternative hypothesis. 
+
+
+## Question 8.14: Climate change - estimation
+
+Let pi denote the proportion of US adults that do not believe in climate change. We'll survey n adults and count up the number of these that don't believe in climate change, Y.
+
+a. Explain which Bayesian model is appropriate for this analysis:
+
+This is a Beta-Binomial model because we are looking at a binary variable (believing or not in climate change) and counting the number Y of n adults surveyed.
+
+b. Specify and discuss your own prior model for pi
+
+I would **hope** this would be a low pi, like 0.1, but in reality I know its higher than that. Perhaps a mean of around 0.3. So I would choose a prior Beta(2,4).
+
+```{r}
+plot_beta(2,4)
+```
+
+c. We'll use the author's Beta(1,2) (that's close to mine!) prior for pi. How does your prior understanding differ from that of the authors.
+
+It's very similar! The mean value is the same. The author is just a tab bit less sure than I am.
+
+d. Using pulse_of_the_nation data from bayesrules to report the sample proportion of surveyed adults with the opinion that climate_change is Not Real At All. 
+
+First let's load up the data:
+```{r}
+data("pulse_of_the_nation")
+```
+
+Then I'm going to get a quick summary, just to see what data is in here:
+```{r}
+summary(pulse_of_the_nation)
+```
+
+Interesting data we have here...the climate one has three possible responses
+
+Okay, now I will grab just the variable we need and then look at the proportion of non-believers on the issue of climate_change:
+```{r}
+climate <- pulse_of_the_nation |> 
+  select(climate_change)
+
+head(climate)
+```
+Now to tally is up:
+```{r}
+climate |> 
+  group_by(climate_change) |> 
+  tally()
+```
+
+The amount of people who responded 'Not Real At All' is 150. Now I can also add a proportion. Just mathing it, we can use the Y = 150 over the full n = 1000. This provides a proportion of 0.15
+
+*Using R to do this all at once, we can try this:*
+
+```{r}
+
+```
+
+
+e. In light of the Beta(1,2) prior and data, calculate and interpret a middle 95% posterior credible interval for pi.
+
+First, I will calculate the posterior model using the data and the prior:
+
+```{r}
+summarize_beta_binomial(alpha = 1,beta=2,y=150,n=1000)
+```
+
+This gives a posterior Beta(151,852).
+
+Then we can construct a 95% confidence interval. 
+```{r}
+#0.025th & 0.975th quantiles of the Beta(151,852) posterior
+qbeta(c(0.025,0.975),151,852)
+```
+
+This gives a 95% CI of (0.129, 0.173). This means that there is a 95% posterior probability that between 13% and 17% of people do not believe in climate change.
+
+## Question 8.15: climate change - hypo testing
+
+Suppose we want to test a claim with hypo testing where 
+
+H_0: pi <= 0.1
+
+H_a: pi > 0.1
+
+a. What decision might you make about these hypos using the credible interval from the previous exercise?
+
+I would believe that the alternative hypothesis is more plausible given the confidence interval we produced of (13%, 17%)
+
+b. Calculate and interpret the posterior probability of H_a
+
+We can do this using pbeta:
+```{r}
+post_probs <- pbeta(0.1,151,852)
+post_probs
+```
+
+So this value feels very wrong...
+
+Ah! This formula is giving the probability that pi is < 0.1 and I need pi > 0.1. So I can take this value minus 1. 
+
+```{r}
+post_probs <- 1-post_probs
+post_probs
+```
+
+Okay, this gives that the posterior probability of the alternative hypothesis is basically 1 (0.999).
+
+c. Calculate and interpret the Bayes Factor for the hypo test:
+
+So first I need to grab the posterior odds, prior probability and prior odds. I need to do the same thing I did above to flip the values for prior probability 
+```{r}
+#posterior odds
+post_odds <- post_probs / (1-post_probs)
+post_odds
+
+#prior odds
+prior_probs <- pbeta(0.1,1,2)
+prior_probs <- 1 - prior_probs
+
+prior_odds <- prior_probs / (1-prior_probs)
+prior_odds
+```
+
+This gives me a prior odds of 4.26 and a posterior odds of 3197444
+
+
+With these two values, I can find the Bayes Factor:
+```{r}
+post_odds / prior_odds
+```
+
+The Bayes Factor here is 750017.6. This means that the plausibility for the alternative hypothesis increased **dramatically** in light of the observed data. 
+
+d. Putting this together, explain your conclusion about pi
+
+Putting all of this together we can see that while the prior odds was slightly in favor of the alternative hypothesis that pi > 0.1, in light of the data with a sample of 1000 we are much much more confident in the alternative hypothesis. (Which is sad honestly, that we can't reduce the number of people who don't believe in climate change to under 10%)
+
+
+## Question 8.16: Climate Change with MCMC - simulation
+
+Repeat and build upon your climate change analysis using MCMC simulation
+
+a. Simulate the posterior model of pi using rstan, 4 chains, and 10000 iterations
+
+Back to MCMC! Let's follow the steps using an n of 1000, Y of 150, Beta(1,2) 
+
+```{r results='hide'}
+#step 1: define the model
+
+cc_model <- "
+data {
+int<lower = 0, upper = 1000> Y;
+}
+parameters {
+real<lower = 0, upper = 1>pi;
+}
+model {
+Y ~ binomial(1000,pi);
+pi ~ beta(1,2);
+}
+"
+
+#Step 2: simulate the posterior
+cc_sim <- stan(model_code = cc_model,data=list(Y=150),chains=4,iter=5000*2,seed=369)
+```
+
+
+b. Produce and discuss trace plots, density plots and autocorrelation plots:
+```{r}
+#trace plot
+mcmc_trace(cc_sim,pars="pi",size=0.1)
+
+#density plot
+mcmc_dens(cc_sim,pars="pi") +
+  yaxis_text(TRUE) +
+  ylab("density")
+
+#autocorrelation
+mcmc_acf(cc_sim,pars="pi")
+```
+
+
+These all look pretty good, saying that the MCMC is acting like an independent sample and there is not obvious stuck or slow mixing.
+
+c. Report the effective sample size ratio and R-hat values for the simulation:
+```{r}
+#calculate the effective sample size ratio
+
+neff_ratio(cc_sim,pars=c("pi"))
+```
+
+This gives the strength of the sample size we had. The closer to 1 this value is the better and we are suspicious of values less than 1. The effective sample size ratio is 0.35 which is over 0.1 so we're all good.
+
+
+```{r}
+#rhat value
+rhat(cc_sim, pars="pi")
+```
+
+R-hat looks at the combined variability of the model with the within-chain variability. A value of 1 would signal stable variability. Over one shows some issues with stability and over 1.05 would be a red flag. Here we have 1.0003 which is a good value. 
+
+
+## Question 8.17: climate change with MCMC - estimation and hypo testing
+
+a. Use MCMC simulation to approximate a middle 95% posterior credible interval for pi using tidy() and calculation from chain values
+
+First with the tidy() summaries:
+
+```{r}
+tidy(cc_sim,conf.int=TRUE,conf.level=0.95)
+```
+This gives a 95% CI (0.129,0.173) meaning that there is a 95% posterior probability that between 13% and 17% of people do not believe in climate change.
+
+Using a fuller calculation with the posterior values we can also find a CI. First we store the chains in a data frame and then calculate the summaries:
+```{r}
+#store the chains into a data frame
+climate_chain_df <- as.data.frame(cc_sim,pars="lp__",include=FALSE)
+dim(climate_chain_df)
+```
+
+```{r}
+climate_chain_df |> 
+  summarize(post_mean = mean(pi),
+            post_median = median(pi),
+            post_mode = sample_mode(pi),
+            lower_95 = quantile(pi,0.025),
+            upper_95 = quantile(pi,0.975))
+```
+
+This gives the exact same values for the CI (0.129,0.173).
+
+b. Use the MCMC simulation to approximate the posterior probability that pi > 0.1
+
+We can do this by looking at the pi values that fulfill this pi condition:
+
+```{r}
+climate_chain_df |> 
+  mutate(exceeds = pi > 0.1) |> 
+  tabyl(exceeds)
+```
+
+This is saying that the posterior probability that pi > 0.1 is 1...this feels incorrect. Let me examining my posterior probability:
+
+```{r}
+#mcmc posterior approximation
+mcmc_dens(cc_sim,pars="pi") +
+  lims(x=c(0,0.3))
+```
+
+
+Okay, so maybe it's right! The spread of this is fairly tight, and values below 0.1 have no density. 
+
+c. How close are the approximations in parts a and b to the actual corresponding posterior values calculated in questions 8.14 and 8.15?
+
+The actual values I got are below:
+
+95% CI of (0.129, 0.173)
+posterior probability of pi > 0.1 = 0.999
+
+The approximations from MCMC I got are here:
+
+95% CI (0.129,0.173)
+posterior probability of pi > 0.1 = 1
+
+These approximation values are pretty much dead on with the posterior values I calculated with the sample. 
+
+## Question 8.18: Climate Change with MCMC - prediction
+
+a. Suppose you survey 100 more adults. Use MCMC simulation to approximate the posterior predictive model of Y', the number that don't believe in climate change. Construct a histogram visualization of the model
+
+We can use rbinom to simulate one Bin(100,pi) outcome Y' from each of the 20k pi chain values: 
+
+```{r}
+#set the seed
+set.seed(369)
+
+#predict a value of Y' for each pi value in the chain
+climate_chain_df <- climate_chain_df |> 
+  mutate(y_predict=rbinom(length(pi),size = 100,prob=pi))
+
+#check it out
+climate_chain_df |> 
+  head(3)
+```
+
+Then we can plot it out:
+```{r}
+#plot 20k predictions
+ggplot(climate_chain_df,aes(x=y_predict)) +
+  stat_count()
+```
+
+This looks like the most likely value is 15 of the next 100 will not believe in climate change. This tracks to the sample we first had where 150 of 1000 did not believe. The range will reasonably be between about 5 and 28. 
+
+b. Summarize your observations of the posterior predictive model of Y'
+
+We can get more precise than my estimates above:
+```{r}
+climate_chain_df |> 
+  summarize(mean = mean(y_predict),
+            lower_95 = quantile(y_predict,0.025),
+            upper_95 = quantile(y_predict,0.975))
+```
+
+This gives a mean of 15 and 95% chance that the figure is between 8 and 23.
+
+*c. Approximate the probability that at least 20 of the 100 people don't believe in climate change*
+
+We are looking for the following:
+
+$P(Y'>=20|y=150) = \sum_{y'=20}^{100}f(y'|y=150)$
+
+This is the probability that the new observation (Y') will be at least 20 given the observed data gave Y=150. This can be found by a long formula...
+
+$f(y'|y=150) = {100}\choose{y'} * \frac{\Gamma(1003)}{\Gamma(151)*\Gamma(852)} * \frac{\Gamma(151 + y')*\Gamma()}...
+
+$f(y'|y) = \int{f(y'|\pi)f(\pi|y)d\pi}$
+
+
+## Question 8.19: Penguins - estimation
+
+Let mu denote the typical flipper length in mm among Adelie penguin species. To learn about mu, we'll use flipper measurements on a sample of Adelie penguins
+
+a. Explain which Bayesian model is appropriate for this analysis
+
+This would be a normal normal because we are looking at the mu
+
+b. You prior understanding is that the average flipper length is about 200mm but you aren't sure. It's plausible it could be as low as 140mm or high as 260mm. Specify an appropriate prior model for mu
+
+I will guess the mean is about 200, landing in the middle of the range and is my original guess. Then for the range I will start off with 60. My prior model will then be: N(200,60^2)
+
+Let's look at this:
+```{r}
+plot_normal(200,60)
+```
+
+This is a bit too wide. Let's cut down on the sd value. Trying 40
+
+```{r}
+plot_normal(200,40)
+```
+
+This looks better to have most of the density between 140 and 260.
+
+
+c. Using the penguins_bayes data in the bayesrules package, find how many data points there are for species and the sample mean of flipper_length_mm
+
+```{r}
+#grabbing the data
+data("penguins_bayes")
+
+#get the observations and the sample mean for flipper_length
+penguins <- penguins_bayes |> 
+  select(species,flipper_length_mm) |> 
+  summarize(avg_flip = mean(flipper_length_mm,na.rm=TRUE),
+            species_num = n())
+
+penguins
+```
+
+This gives that the average of this sample is about 201 and the number of species data points is 344
+
+*d. In light of the prior and data, calculate and interpret a middle 95% posterior credible interval for mu. First you have to specify a posterior model for mu*
+
+First to calculate a posterior for mu
+
+```{r}
+summarize_normal_normal(200,40,y_bar=200.9152,n=344)
+```
+
+
+This gives a posterior of N(200,40^2)...which is the same...hmmm
+
+To get a 95% credible interval we can use qnorm
+
+```{r}
+qnorm(c(0.025,0.975),mean=200,sd=40)
+```
+
+This gives a 95% CI of (121.6,278.4). This means that there is a 95% posterior probability that the mean is between 121.6 and 278.4.
+
+
+*## Question 8.20: Penguins - hypothesis testing*
+
+Continue examining the Adelie penguins
+
+a. Hypothesize that the average Adelie flipper hypo test is between 200mm and 220mm. State this as a formal hypo test
+
+H_0: 
+H_a: 
+
+
+b. What decision might you make about these hypotheses using the credible interval from the previous exercise
+
+c. Calculate and interpret the posterior probability that your hypothesis is true
+
+d. Putting this together, explain your conclusion about mu
+
+
+## Question 8.21: Loons - estimation
+
+The loon is a species of bird common to Ontario. Let lambda denote the typical number of loons observed across a 100-hr period. 
+
+a. Explain which Bayesian model is appropriate
+
+This is a Gamma-Poisson because we are dealing with the rate of occurrence over a time interval
+
+b. Your prior understanding is that the typical rate is 2 per 100 hrs with sd = 1 per 100 hrs. Specify a prior model for lambda and explain
+
+I will use s = 2 and r = 100 to keep the units consistent with the units we observed
+
+Gamma(2,100)
+
+c. The loons data contains counts in different observation periods. How many data points do we have and what's the average loon count?
+
+First to load the data:
+```{r}
+data("loons")
+```
+
+Then I'll take a quick peak:
+```{r}
+head(loons)
+```
+
+Okay, so we are looking for the count_per_100 variable here for average and we can take all the data points:
+
+```{r}
+loons_df <- loons |> 
+  summarize(ct_100_avg = mean(count_per_100,na.rm=TRUE),
+            data_pts = n())
+loons_df
+```
+
+This gives the average count in 100 hr periods is 1.5 and the observations are 18
+
+d. In light of the prior and data, calculate and interpret a middle 95% posterior credible interval for lambda. First you need to specify posterior model of lambda
+
+Firs to use the summary to find the posterior model:
+```{r}
+summarize_gamma_poisson(2,100,sum_y=1.5,n=18)
+```
+
+This gives a posterior Gamma(3.5,118)
+
+Then using this, we can calculate the 95% CI using qgamma
+```{r}
+qgamma(c(0.025,0.975),3.5,118)
+```
+
+*The 95% CI is (0.0072, 0.0679). This means that there is a 95% posterior probability that lambda is between 0.007 and 0.07.*
+
+
+## Question 8.22: Loons - Hypo testing
+
+a. Hypothesize that you anticipate a rate of less than 1 per observation period. State this as a formal hypo test:
+
+H_0: lambda < 1
+H_a: lambda >= 1
+
+b. What decision might you make about these hypos using the credible interval from previous exercise?
+
+The CI we got for lambda were both below 1 by a bit, so we would expect to favor heavily the null hypo
+
+*c. Calculate and interpret the posterior probability that your hypo is true*
+
+We can get the posterior probability using pgamma and the posterior values for shape and rate
+
+```{r}
+pgamma(1,3.5,118)
+```
+
+Again, we have to flip this probability because this is giving the probability that lambda < 1 as the formula takes it. Meaning that the posterior probability of the alternative hypothesis that lambda >=1 is 0. Let's check out the graph to see if that checks out
+
+```{r}
+plot_gamma(3.5,118)
+```
+
+This seems to check out, providing all lambda values under 0.1
+
+
+d. Putting this together, explain your conclusion about lambda
+
+
+
+## Question 8.23: Loons with MCMC - simulation
+
+a. Simulate the posterior model of lambda, the typical rate of loon sightings per observation period using rstan 4 chains and 10000 iterations per chain
+
+First, let's grab our vector of observations:
+
+```{r}
+loons_Y <- as.vector(loons$count_per_100)
+loons_Y
+```
+
+Then we can use that within the rstan model when it calls for an observations vector
+
+```{r results='hide'}
+#step 1: define the model
+
+loons_model <- "
+data {
+int<lower = 0> Y[18];
+}
+parameters {
+real<lower = 0>lambda;
+}
+model {
+Y ~ poisson(lambda);
+lambda ~ gamma(2,100);
+}
+"
+
+#step 2: simulate the posterior
+
+loons_sim <- stan(model_code = loons_model, data=list(Y=loons_Y),
+               chains=4,iter=5000*2,seed=369)
+```
+
+b. Perform some diagnostics to confirm the simulation has stabilized
+
+We'll do both visual and analytic diagnostics below
+
+```{r}
+#trace plot
+mcmc_trace(loons_sim,pars="lambda",size=0.1)
+
+#density plot
+mcmc_dens(loons_sim,pars="lambda")+
+  yaxis_text(TRUE)+
+  ylab("density")
+
+#autocorrelation
+mcmc_acf(loons_sim,pars="lambda")
+```
+
+These all look good with fast mixing, not stuck points. Now for the analytical checks
+
+```{r}
+#Neff ratio
+
+neff_ratio(loons_sim,pars="lambda")
+
+#rhat
+
+rhat(loons_sim,pars="lambda")
+```
+
+
+This gives a Neff of over 0.1 so we're not worried and an rhat of about 1 and less than 1.05. 
+
+
+c. Use MCMC simulation to approximate a middle 95% posterior credible interval for lambda using tidy and direct calculation
+
+Using tidy we can get values:
+```{r}
+tidy(loons_sim,conf.int = TRUE,conf.level=0.95)
+```
+This provides a 95% CI of (0.164, 0.342)
+
+
+Now we have to save this as a dataframe before doing more summary:
+```{r}
+loons_chain_df <- as.data.frame(loons_sim,pars="lp__",include=FALSE)
+dim(loons_chain_df)
+```
+
+Then let's get the summary calculations:
+
+```{r}
+loons_chain_df |> 
+  summarize(post_mean = mean(lambda),
+            post_median = median(lambda),
+            post_mode = sample_mode(lambda),
+            lower_95 = quantile(lambda,0.025),
+            upper_95 = quantile(lambda,0.975))
+```
+
+This gives a 95% CI of (0.164,0.342) as well
+
+d. Use MCMC to approximate the posterior probability that lambda is < 1
+
+```{r}
+loons_chain_df |> 
+  mutate(exceeds = lambda < 1) |> 
+  tabyl(exceeds)
+```
+
+This says that the posterior probability that lambda is less than 1 is 1, which is what we found before
+
+*e. How close are the approximations to the actual posterior values you calculated?*
+
+Actual calculations:
+
+Posterior probability of lambda < 1 = 1
+95% CI = (0.0072, 0.0679)
+posterior mean = .0297
+
+Approximations:
+
+Posterior probability of lambda < 1 = 1
+95% CI = (0.164,0.342)
+posterior mean = 0.245
+
+
+## Question 8.24: Loons with MCMC - prediction
+
+a. Use MCMC simulation to approximate the posterior predictive mode of Y' and construct a histogram visualization 
+
+
+```{r}
+#set the seed
+set.seed(369)
+
+#predict a value of Y' for each lambda value in the chain
+loons_chain_df <- loons_chain_df |> 
+  mutate(y_predict=rpois(n=1,lambda))
+
+#check it out
+loons_chain_df |> 
+  head(3)
+```
+
+Then plot it out:
+```{r}
+#plot 20k predictions
+ggplot(loons_chain_df,aes(x=y_predict)) +
+  stat_count()
+```
+
+This gives the most likely value to be 0. 
+
+b. Summarize your observations of the posterior predictive model of Y'
+
+```{r}
+loons_chain_df |> 
+  summarize(mean = mean(y_predict),
+            lower_95 = quantile(y_predict,0.025),
+            upper_95 = quantile(y_predict,0.975))
+```
+
+This provides a mean of 0 and a 95% chance that the number of loons the birdwatcher will see in the next 100-hour period is 0
+
+c. Approximate the probability that the birdwatcher observed 0 loons in their next observation period
+
+
+
+
+
