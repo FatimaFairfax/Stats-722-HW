@@ -397,7 +397,7 @@ Looking at this data, this appears to show a very weak negative relationship bet
 
 b. Does simple Normal regression seem to be a reasonable approach to modeling the relationship?
 
-I think this is a reasonable approach to examining this data. There seems to be a fairly linear relationship between these two variables. The only piece that might benefit from some alternative analysis is the fact there there has to be some plateu of rides for all of this data where the X variables will stop having any effect on the response variable due to factors like number of citizens in the set and limits to how many rides you could possibly take.
+I have questions if this is a reasonable approach. There seems to be a fairly linear relationship between these two variables, however the data gives a large blob without a clear shape, whereas other data relationship's we've looked at does appear to have a vaguely linear shape. Furthermore, there has to be some plateau of rides for all of this data where the X variables will stop having any effect on the response variable due to factors like number of citizens in the set and limits to how many rides you could possibly take.
 
 
 ## Question 9.11 - how humid is too humid - posterior simulation
@@ -455,7 +455,7 @@ bikes |>
 ```
 
 
-This gives a much more converged line for the relationship between rides and humidity that the prior simulations did. However, there appears to be both positive and negative lines within this 100 plot simulation. 
+This gives a much more converged line for the relationship between rides and humidity than the prior simulations did. However, there appears to be both negative slope lines and lines that could be zero within this 100 plot simulation. 
 
 
 ## Question 9.12: How humid is too humid - posterior interpretation
@@ -639,7 +639,7 @@ bikes |>
 ```
 
 
-This shows a *lot* of different plausible lines that do all over the place. There is no clear relationship between rides and windspeed in this prior model. For the 4 datasets, those do seem to show a negative relationship with pretty limited variability.
+This shows a *lot* of different plausible lines that go all over the place. There is no clear relationship between rides and windspeed in this prior model. For the 4 datasets, those do seem to show a negative relationship with pretty limited variability.
 
 d. Construct and discuss a plot of rides v windspeed data. How consistent are the observed patterns with your prior understanding of this relationship?
 
