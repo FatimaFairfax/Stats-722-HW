@@ -7,7 +7,7 @@ output: html_document
 
 Let's load it up!
 
-```{r}
+```{r results='hide'}
 library(bayesrules)
 library(tidyverse)
 library(rstan)
@@ -42,7 +42,7 @@ c. Impact of analysis on society -- if people collect health information to jack
 d. Bias baked into the analysis -- if people only collect the above data from people in low-income then the data won't be representative of the whole population
 
 
-## Question 10.3: Your prespective
+## Question 10.3: Your perspective
 
 Everyone has a standpoint of perspective that influences how they perceive the world. It is important to recognize it and how it might limit our ability to perceive the potential harms or benefits of our analyses
 
@@ -188,19 +188,22 @@ Recall the example: *Suppose you want to open a new taco stand. You build all of
 
 a. What is the "data" in this analogy?
 
-The data is Reem's response to the ancho-ladas dish.
+The data are Reem's responses to the taco recipe.
 
-the dish recipe (as predictor X) and the reaction or review of the dish (as response Y)
 
 b. What is the "model" in this analogy?
 
-The model is the prediction of the public reception of the ancho-lada dish.
+The model is taking a friends opinion on my taco recipe to predict the response of the public.
 
-The model is the taste testing that Reem does to produce an opinion on the latest recipe.
+c. How could you use cross-validation to evaluate a new taco recipe?
 
-**c. How could you use cross-validation to evaluate a new taco recipe?**
+I would need to make some more friends, but assuming I do, I can use cross-validation to train the model (e.g., employ taste testers) with a subset of my friends on a new recipe and then test that recipe on the remaining friends to see what their response is. That way I am not 'training' the taste test model on a one friend to try and guess the response to the data.
 
-Cross-validation allows us to train a model on a portion of the data set and then test it on the remaining piece of the data set multiple times to get a more optimal estimate of how our model generalizes beyond the particular data sample. For this example, we would need some more friends who can act as additional folds in the model. This would allow us to "train" the model on...
+
+d. Why would cross-validation help you develop a successful recipe?
+
+Cross-validation allows us to train a model on a portion of the data set and then test it on the remaining piece of the data set multiple times to get a more optimal estimate of how our model generalizes beyond the particular data sample. Doing this would allow me to train the model on different subsets of the data rather than training the model (getting a taste) and testing the model using that same data (Reem's response). This would let us get a more accurate picture of how the average person would respond to the recipe and subsequently give me a better outcome of success for my taco recipe.
+
 
 ## Question 10.12: Cross-validation
 
@@ -224,7 +227,7 @@ Is there any way to test for the overall bias in a data set that would make k-fo
 
 # Applied Exercises - Model a coffee bean's rating on a 1-100 scale by grades on features such as its aroma and aftertaste using coffee_ratings data.
 
-```{r}
+```{r results='hide'}
 library(bayesrules)
 data("coffee_ratings")
 coffee_ratings <- coffee_ratings |> 
@@ -234,16 +237,14 @@ coffee_ratings <- coffee_ratings |>
 
 ## Question 10.13: Getting started with coffee ratings
 
-*a. The coffee_ratings data includes ratings and features of 1339 different batches of beans frown on 571 different farms. Explain why using (total_cup_points) by aroma or aftertaste likely violates the independent assumption of the Bayesian linear regression model*
+a. The coffee_ratings data includes ratings and features of 1339 different batches of beans frown on 571 different farms. Explain why using (total_cup_points) by aroma or aftertaste likely violates the independent assumption of the Bayesian linear regression model
 
 First I'll take a quick look at the data:
 ```{r}
 head(coffee_ratings,6)
 ```
 
-*This relationship likely violates the independent assumption of the Bayesian linear model because the total_cup_points rating is made up of a composite of considerations, including aroma and aftertaste...*
-
-*Observed data Yi of coffee ratings is likely correlated to the region, season, or farm that the coffee is coming from. Conditioning on the aroma or aftertaste would not necessarily cancel out this correlated effect.*
+Observed data Yi of coffee ratings is likely correlated to the region, season, or farm that the coffee is coming from. Conditioning on the aroma or aftertaste would not necessarily cancel out this correlated effect. In this way, explaining the coffee ratings on aroma or aftertaste will likely not fully satisfy the independence assumption.
 
 b. You'll learn how to use this type of data in unit 4. But solely for the purpose of simplifying things, take just one observation per farm
 
@@ -287,18 +288,20 @@ coffee_model <- stan_glm(total_cup_points ~ aroma,data=new_coffee,
                          chains = 4, iter = 5000*2,seed=369)
 ```
 
-*b. Provide visual and numerical posterior summaries for the aroma coefficient $\beta_1$*
+b. Provide visual and numerical posterior summaries for the aroma coefficient $\beta_1$
 
 ```{r}
 #plot posterior simulated lines 
 
 new_coffee |> 
-  tidybayes::add_fitted_draws(coffee_model,n=100) |> 
+  add_fitted_draws(coffee_model,n=100) |> 
   ggplot(aes(x=aroma,y=total_cup_points)) +
-  geom_line(aes(y=.value,grow=.draw),alpha=0.15)
+  geom_line(aes(y=.value,group=.draw),alpha=0.15)+
+  geom_point(data=new_coffee,size=0.05)
 
 ```
 
+This shows that the relationship between coffee ratings and the aroma have a pretty strong positive relationship and there is very little variation between the posterior lines. 
 
 To get the posterior summary we can use the tidy() function:
 
@@ -412,7 +415,7 @@ For this first batch, there is a coffee rating of 82.92. We can see how this obs
 set.seed(369)
 predict_batch1 <- coffee_model_df |> 
   mutate(mu=`(Intercept)` + aroma*7.58,
-         y_new = rnorm(4000,mean=mu,sd=sigma))
+         y_new = rnorm(20000,mean=mu,sd=sigma))
 
 #plot
 ggplot(predict_batch1,aes(x=y_new))+
