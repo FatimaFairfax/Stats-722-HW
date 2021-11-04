@@ -1,0 +1,782 @@
+---
+title: "HW 11 - Bayes Rules 10"
+author: "Fatima Fairfax"
+date: "11/2/2021"
+output: html_document
+---
+
+Let's load it up!
+
+```{r}
+library(bayesrules)
+library(tidyverse)
+library(rstan)
+library(rstanarm)
+library(bayesplot)
+library(tidybayes)
+library(janitor)
+library(broom.mixed)
+```
+
+
+## Question 10.1: The Big Three
+
+When evaluating a model, what are the big three questions to ask yourself?
+
+The big three questions to ask are:
+
+- How fair is the model?
+- How wrong is the model?
+- How accurate are the posterior predictive models?
+
+## Question 10.2: Model Fairness
+
+Give an example of a model that will not be fair for each of the reasons below. Your examples don't have to be from real life, but try to keep them in the realm of plausibility
+
+a. How the data was collected -- if data was collected about patients in a hospital by removing their files from their door cubbies without consent that would be unfair
+
+b. The purpose of the data collection -- if the data was collected for patients to inform their personal health care but is used for insurance policies that would be unfair
+
+c. Impact of analysis on society -- if people collect health information to jack up the prices of insurance for people in need of health insurance but have preexisting conditions, that would be unfair
+
+d. Bias baked into the analysis -- if people only collect the above data from people in low-income then the data won't be representative of the whole population
+
+
+## Question 10.3: Your prespective
+
+Everyone has a standpoint of perspective that influences how they perceive the world. It is important to recognize it and how it might limit our ability to perceive the potential harms or benefits of our analyses
+
+a. Identify two aspects of your life experience that inform your standpoint or perspective
+
+I grew up and have primarily lived in the Northeast United States and have only attended private institutions for education
+
+b. Identify how these two aspects of your life experience might limit your evaluation of future analyses
+
+I am used to the way of life and the people in the North east where there is an assumption of shared values and experiences. I also was trained and taught by similar people in my education and have blind spots on how the public education system works.
+
+c. Identify how those two aspects of your life experience might benefit your evaluation of future analyses
+
+I have been pretty immersed in the North East and in private institutions and have gained a lot of personal experience with how those places and systems work and the issues within them.
+
+
+## Question 10.4: Neutrality?
+
+Scientists might falsely consider themselves neutral. Challenge these false ideas:
+
+a. How would you respond if your colleague said "I'm just a neutral observer, so there's no bias in my data analysis"
+
+I would tell them that all of our identities and experiences have the potential to bias us and neutrality is not actually a thing (lol). Then perhaps give them an example of a way that one of my identities has biased me in the past when I was assuming a neutral stance.
+
+b. My colleague now admits that they are not personally neutral by their model is neutral
+
+I would say that the choices we make about the data we collect and how we analyze the data is informed by our biases. 
+
+c. Give an example of when your personal experience or perspective has informed a data analysis
+
+In a previous experience I was told to analyze respondents' survey answers to questions about their DEI experience. Given my identity and my previous experience with DEI work, I was able to notice that some of the disparate answers in the survey by identity were due to bias in the questions asked and were not an indicator of proficiency with topics around DEI. This led to a change in the questions asked and data collected for the analysis.
+
+## Question 10.5: That famous quote
+
+George Box famously said: "All models are wrong, but some are useful." Write an explanation of what this quote means
+
+All models are attempts to get a representation of a very complex concept or reality and can never fully capture all of the confounding parts or interrelations of the real world. Even so, some models, if they can be less wrong, can give us valuable information about how to understand the world to the best ability of a statistical method. 
+
+## Question 10.6: Assumptions
+
+Provide 3 assumptions of the Normal Bayesian linear regression model: $Y_i|\beta_0,\beta_1,\sigma \text{ ~ } N(\mu_i,\sigma^2) \text{ where } \mu_i = \beta_0 + \beta_1X_i$
+
+
+- Assumption 1: Conditioned on X, the observed data Y_i is *independent* of the observed data on any other case 
+
+- Assumption 2: outcome Y can be written as a *linear* function of X
+
+- Assumption 3: At any X value, Y *varies normally* around mu with consistent variability sigma
+
+
+## Question 10.7: Mini posterior predictive check
+
+Suppose we have a small dataset where predictor X has values x = (12,10,4,8,6) and response variable Y has values y = (20,17,4,11,9). Based on this data, we built a Bayesian linear regression model of Y v X
+
+a. In the first simulated parameter set, $(\beta_0^1,\beta_1^1,\sigma^1) = (-1.8,2.1,0.8)$. Explain how you would use these values, combined with the data, to generate a prediction for Y1
+
+We take the observed X1 value we have and the simulated parameter set to plug in to the formula we have for Normal Bayesian regression: $Y_i|\beta_0,\beta_1,\sigma \text{ ~ } N(\mu_i,\sigma^2) \text{ where } \mu_i = \beta_0 + \beta_1X_i$. This will produce a predicted value for Y_1. We can then compare the predicted Y1 value with the observed Y1 value in our set.
+
+
+b. Using the parameter set, generate predictions for (Y1...Y5). 
+
+First create a dataframe using the observed data we have:
+```{r}
+#create a dataframe
+
+x <- c(12,10,4,8,6)
+y <- c(20,17,4,11,9)
+
+test_df <- data.frame(x,y)
+test_df
+```
+
+Set the parameters:
+```{r}
+beta_0 <- -1.8
+beta_1 <- 2.1
+sigma <- 0.8
+```
+
+
+Then get a prediction of 5 y responses:
+```{r}
+#predict Y using the simulated parameter set
+
+Y_simulation <- test_df |> 
+  mutate(mu=beta_0 + beta_1 * x,
+         simulated_y=rnorm(5,mean=mu,sd=sigma)) |> 
+  select(x,y,simulated_y)
+
+Y_simulation
+```
+
+The simulated y values are decently close to the observed values of y. Not too far but also not great with values at most almost 6 off and in others close to 2.
+
+
+## Question 10.8: Explain to a friend - posterior predictive check
+
+Friend Shefali has a lot of questions about the posterior predictive check. Explain the following:
+
+a. The goal of a posterior predictive check
+
+In our Bayesian model we make 3 assumptions. Two are that the relationship between X and Y are linear and that at any X value, Y varies normally around mu with consistent variability sigma. We want to check that these assumptions are true. If they are, then the posterior model should be able to simulate data that looks similar to our actual data. The posterior predictive check allows us to check just that, if the simulated data we get looks similar to the actual data we have.
+
+b. How to interpret the posterior predictive check results
+
+We should know that at any given value, the predictive check is likely to be different from the actual data. However, we want to ensure that on the whole, the simulated data looks like our observed data. So we can see what the distribution of our simulated data is compared to the distribution of the observed data. If they have similar general centers and spread then this is a good sign for our model.
+
+
+## Question 10.9: Explain to a friend - posterior predictive summary
+
+Shefali wants an explanation of predictive summaries:
+
+a. What the median absolute error tells us about the model
+
+The median absolute error (MAE) measures the typical difference between the observed Y values and the posterior predictive means Y values. This will give us a sense if our model has under or over-predicted the Y value.
+
+b. What the scaled median absolute error is and why it might be an improvement over median absolute error
+
+The scaled median absolute error measures the typical number of standard deviations that the observed Yi fall from the posterior predictive means Yi'. This could be better than the MAE because the MAE only considers absolute distance between observed values and the posterior predictive mean. The scaled MAE looks at the relative distance of the observed Y and posterior predicted Y and takes in to account the standard deviations that the simulated data falls within compared to the actual data. 
+
+c. What the within-50 statistic tells us about our model
+
+The within-50 statistic measures the proportion of observed values Yi that call within their 50% posterior prediction interval. Unlike MAE and scaled MAE, this allows us to look at the entire posterior predictive model as a prediction of Y, not just the center of the model. This tracks if a value falls into its posterior prediction interval. 
+
+
+## Question 10.10: Posterior predictive checks
+
+a. In pp_check() plots, what does the darker density represent? What does a single lighter-colored density represent?
+
+The darker density represents the observed data. A single lighter colored density represents one simulated data set from our MCMC simulation of the data.
+
+b. If our model fits well, describe how its pp_check() will appear. Explain why a good fitting model will produce a plot like this.
+
+If the model fits well the dark blue line will look similar in shape and spread to the lighter lines. This means that the simulated data behaves similar to the observed data (similar center, spread, and function)
+
+c. If our model fits poorly, describe how its pp_check() might appear.
+
+If the model fits poorly, the dark blue line and the lighter blue lines will not have a similar shape, center, or spread.
+
+## Question 10.11: Cross-validation and tacos
+
+Recall the example: *Suppose you want to open a new taco stand. You build all of your recipes around Reem, your friend who prefers that anchovies be a part of every meal. You test your latest “anchov-ladas” dish on her and it’s a hit*
+
+a. What is the "data" in this analogy?
+
+The data is Reem's response to the ancho-ladas dish.
+
+the dish recipe (as predictor X) and the reaction or review of the dish (as response Y)
+
+b. What is the "model" in this analogy?
+
+The model is the prediction of the public reception of the ancho-lada dish.
+
+The model is the taste testing that Reem does to produce an opinion on the latest recipe.
+
+**c. How could you use cross-validation to evaluate a new taco recipe?**
+
+Cross-validation allows us to train a model on a portion of the data set and then test it on the remaining piece of the data set multiple times to get a more optimal estimate of how our model generalizes beyond the particular data sample. For this example, we would need some more friends who can act as additional folds in the model. This would allow us to "train" the model on...
+
+## Question 10.12: Cross-validation
+
+a. What are the four steps for the k-fold cross-validation algorithm?
+
+  1. Create folds k from 2 to the original sample size of n
+
+  2. Train and test the model by training the model on the first k-1 folds, testing it one the kth fold, and assessing the model quality
+
+  3. Repeat step 2 k-1 more times, each time leaving out a different fold
+
+  4. Calculate a cross validation estimate by averaging out the prediction quality measures from each of the model test done in steps 2/3
+
+b. What problems can occur when you use the same exact data to train and test a model?
+
+If you use the same data to both train and test a model you are likely to get predictions that are overly confident in accurate predictions and when you attempt to use the model to predict new data the estimate will not be as accurate.
+
+c. What question do you have about k-fold cross-validation?
+
+Is there any way to test for the overall bias in a data set that would make k-fold cross validation less effective? At a certain point, if the data is so skewed that training the model on any subset of the data set will create a bad estimate, is there a way to test for that?
+
+# Applied Exercises - Model a coffee bean's rating on a 1-100 scale by grades on features such as its aroma and aftertaste using coffee_ratings data.
+
+```{r}
+library(bayesrules)
+data("coffee_ratings")
+coffee_ratings <- coffee_ratings |> 
+  select(farm_name,total_cup_points,aroma,aftertaste)
+```
+
+
+## Question 10.13: Getting started with coffee ratings
+
+*a. The coffee_ratings data includes ratings and features of 1339 different batches of beans frown on 571 different farms. Explain why using (total_cup_points) by aroma or aftertaste likely violates the independent assumption of the Bayesian linear regression model*
+
+First I'll take a quick look at the data:
+```{r}
+head(coffee_ratings,6)
+```
+
+*This relationship likely violates the independent assumption of the Bayesian linear model because the total_cup_points rating is made up of a composite of considerations, including aroma and aftertaste...*
+
+*Observed data Yi of coffee ratings is likely correlated to the region, season, or farm that the coffee is coming from. Conditioning on the aroma or aftertaste would not necessarily cancel out this correlated effect.*
+
+b. You'll learn how to use this type of data in unit 4. But solely for the purpose of simplifying things, take just one observation per farm
+
+```{r}
+set.seed(369)
+new_coffee <- coffee_ratings |> 
+  group_by(farm_name) |> 
+  sample_n(1) |> 
+  ungroup()
+dim(new_coffee)
+```
+
+
+## Question 10.14: Coffee ratings - model it
+
+We will build a Bayesian normal regression model of a coffee bean's rating (Y) by its aroma grade (X). Assume that our only prior understanding is that the average cup of coffee has a 75 point rating, though this might be anywhere between 55 and 95. Beyond that we use weakly informative priors:
+
+a. Plot and discuss the relationship between a coffee's rating and its aroma
+
+We can do a simple plot of the data:
+
+```{r}
+ggplot(new_coffee,aes(x=aroma,y=total_cup_points)) +
+  geom_point(size=0.75) +
+  geom_smooth(method="lm",se=FALSE)
+```
+
+This shoes that the coffee's rating (total_cup_points) is pretty positively correlated with the aroma grade of the coffee. This relationship seems pretty confidently linear.
+
+b. Use stan_glm() to simulate the Normal regression posterior model:
+
+We can use our prior information to inform our prior intercept. We are told that the average cup of coffee has a score of 75 but that it will reasonably fall between 55 and 95. We can take this to assume 75 as mu and 10 as the sd (to account for 2 SD spread). This would give a prior for $\beta_0 = N(75,10^2)$. For the other priors we can use weakly informative priors. 
+
+
+```{r results='hide'}
+coffee_model <- stan_glm(total_cup_points ~ aroma,data=new_coffee,
+                         family = gaussian,
+                         prior_intercept = normal(0,2.5,autoscale=TRUE),
+                         prior = normal(75,10),
+                         prior_aux = exponential(1,autoscale=TRUE),
+                         chains = 4, iter = 5000*2,seed=369)
+```
+
+*b. Provide visual and numerical posterior summaries for the aroma coefficient $\beta_1$*
+
+```{r}
+#plot posterior simulated lines 
+
+new_coffee |> 
+  tidybayes::add_fitted_draws(coffee_model,n=100) |> 
+  ggplot(aes(x=aroma,y=total_cup_points)) +
+  geom_line(aes(y=.value,grow=.draw),alpha=0.15)
+
+```
+
+
+To get the posterior summary we can use the tidy() function:
+
+```{r}
+tidy(coffee_model,effects=c("fixed","aux"),
+     conf.int=TRUE,conf.level=0.9)
+```
+
+
+d. Interpret the posterior median of beta_1
+
+The posterior median of beta_1 here is 6.18 which means for a unit increase in coffee ratings, the aroma grade increases 6.18 points. The standard error on this value is low (0.22) and the 90% CI is (5.8, 6.5) which is pretty small and is above zero, both clues that the relationship between coffee rating and aroma points is indeed period.
+
+e. Do you have significant posterior evidence that the better the bean's aroma, the higher its rating tends to be?
+
+As I stated above, there is visual evidence of the positive relationship in the plot. The confidence interval is above zero and pretty small which gives us a pretty good feeling. Then we can check the sample:
+
+```{r}
+#store as data frame
+coffee_model_df <- as.data.frame(coffee_model)
+
+#tabulate beta_1 above 0
+coffee_model_df |> 
+  mutate(exceeds_0 = aroma > 0) |> 
+  tabyl(exceeds_0)
+```
+
+This shows that all of the values are above 0 giving us evern more posterior evidence that the relationship is positive.
+
+## Question 10.15: Coffee ratings - is it wrong?
+
+Now let's consider whether it's wrong
+
+a. Posterior simulation contain multiple plausible parameter sets. Use the first of these to simulate a sample of 572 new coffee ratings from observed aroma grades
+
+First I will grab the first parameters:
+```{r}
+first_coffee <- head(coffee_model_df,1)
+
+first_coffee
+```
+
+Then I grab the parameters from this set and run the simulation:
+
+```{r}
+#set the parameters
+
+beta_0 <- first_coffee$`(Intercept)`
+beta_1 <- first_coffee$aroma
+sigma <- first_coffee$sigma
+
+#set the seed
+set.seed(369)
+
+#run the sim
+coffee_sim <- new_coffee |> 
+  mutate(mu = beta_0 + beta_1 * aroma,
+         simulated_coffee = rnorm(572,mean = mu, sd = sigma)) |> 
+  select(aroma, total_cup_points,simulated_coffee)
+
+#check the simulated data with the observed
+
+head(coffee_sim, 3)
+  
+
+```
+
+b. Construct a density plot of your simulated sample and superimpose this with a density plot of the actual observed data
+
+```{r}
+ggplot(coffee_sim,aes(x=simulated_coffee)) +
+  geom_density(color = "lightblue") +
+  geom_density(aes(x=total_cup_points),color="darkblue")
+  
+```
+
+This gives us the simulated data in light blue and the actual data in darkblue. This shows that both data sets have similar centers and spreads. The actual data shows higher density in the center of the spread and has some more peaks between 65 and 80 that is not shown in the simulated data. 
+
+c. Use pp_check() to implement a more complete posterior predictive check
+
+```{r}
+#posterior model with 50 simulated data sets plotted
+
+pp_check(coffee_model,n=50) +
+  xlab("coffee ratings")
+```
+
+This is consistent with my first check, that the center and spread is very similar, there are more bumps in the left tail of the actual data and the density is higher in the center of the actual data.
+
+d. Do you think assumptions 2 and 3 of the Normal regression model are reasonable?
+
+I think assumptions 2 (linear) and 3 (normal variance around the mu and consistent variance in sigma) are reasonable. The simulated model gives a good rough estimate of the actual data in the shape and spread.
+
+
+## Question 10.16: Coffee ratings - are the posterior predictions accurate? - Part 1
+
+Let's explore how well the posterior model predicts coffee bean ratings
+
+a. The first batch of coffee beans in new_coffee has an aroma grade of 7.67*. Without using posterior_predict(), simulate and plot a posterior predictive model for the rating of this batch
+
+Here we can pull out the first batch (*note: I believe this is a result of taking a different seed, but my aroma grade for the first batch is 7.58).
+
+```{r}
+first_batch <- head(new_coffee,1)
+first_batch
+```
+
+For this first batch, there is a coffee rating of 82.92. We can see how this observation compares to the posterior prediction of ridership on this day by simulating and plotting the posterior predictive model:
+
+```{r}
+set.seed(369)
+predict_batch1 <- coffee_model_df |> 
+  mutate(mu=`(Intercept)` + aroma*7.58,
+         y_new = rnorm(4000,mean=mu,sd=sigma))
+
+#plot
+ggplot(predict_batch1,aes(x=y_new))+
+  geom_density()+
+  geom_vline(xintercept=82.92)
+```
+
+This gives a prediction of this particular batch with an aroma score of 7.58.
+
+
+b. In reality, this batch of beans has a rating of 84* (82.92 with my seed). Without using prediction_summary(), calculate and interpret two measures of the posterior predictive error for this batch
+
+Here we are looking for the MAE and scaled MAE values. 
+
+```{r}
+#get the MAE value
+
+predict_batch1 |> 
+  summarize(mean=mean(y_new),error=82.92 - mean(y_new))
+
+```
+This shows that the error for this batch prediction if 0.8. This means that the simulated mean is about 0.8 less than the observed mean. This absolute value seems pretty close!
+
+```{r}
+#get the scaled MAE
+
+predict_batch1 |> 
+  summarize(sd=sd(y_new),error=82.92 - mean(y_new),
+            error_scaled = error / sd(y_new))
+```
+This shows a scaled error of 0.46, meaning the simulated mean we got is about 0.46 standard deviations from the observed mean. 
+
+
+c. To get a sense of the posterior predictive accuracy for all batches, construct and discuss a ppc_interval() plot
+
+First set the predictions:
+```{r}
+set.seed(369)
+predictions <- posterior_predict(coffee_model,newdata = new_coffee)
+```
+
+Then the ppc_intervals:
+
+```{r}
+ppc_intervals(new_coffee$total_cup_points,yrep=predictions,x=new_coffee$aroma,
+              prob = 0.5, prob_outer=0.95)
+```
+
+
+This chart is honestly pretty hard to see...but it seems like a decent amount of the observed data (dark blue dots) is within the 95% prediction interval (long light blue lines from the light blue simulated dots). Less of the observed data is within the 50% prediction interval (shorter blue lines from the light blue simulated dots). Given the concentration, especially between x = 7.3 to 8, the within 50 seems potentially higher than previous charts we've seen.
+
+d. How many batches have ratings that are within their 50% posterior prediction interval? 
+
+I can do this with the prediction summary:
+
+```{r}
+set.seed(369)
+prediction_summary(coffee_model,data=new_coffee)
+```
+
+This shows that about 64% of the batches have ratings within the 50% posterior prediction interval
+
+## Question 10.17: Coffee ratings - are the posterior predictions accurate? - Part 2
+
+a. Use prediction_summary_cv() to obtain 10 fold cross validated measurements of the models posterior predictive quality
+
+```{r}
+cv_procedure <- prediction_summary_cv(model=coffee_model, data=new_coffee,k=10)
+
+cv_procedure$cv
+```
+
+b. Interpret the four cross-validated metrics reported in part a
+
+MAE - the median absolute error is the difference between the observed Y values and the simulated Y' values. This 10 fold cross validated MAE is 0.84 meaning that the Y coffee ratings we observed were 0.84 greater than the coffee ratings we expected. 
+
+Scaled MAE - the scaled median absolute error is how many posterior standard deviations the observed value falls from the posterior predictive mean. This scaled MAE is 0.49, meaning that the coffee ratings we observed were 0.49 standard deviations above the mean prediction
+
+Within_50 and Within_95 - there are posterior prediction intervals. They track whether the observed Y (coffee ratings) value falls into each posterior prediction interval. For this case, we see that 64% of the observed values for coffee ratings fell within their 50% posterior prediction interval and 94% fell within their 95% posterior prediction interval.
+
+c. Verify the reported cross-validated MAE using information from the 10 folds
+
+To do this, we can look at each fold's information and see the spread or take the averages ourselves:
+
+```{r}
+cv_procedure$folds
+
+valid_mae <- mean(cv_procedure$folds$mae)
+valid_mae_scaled <- mean(cv_procedure$folds$mae_scaled)
+valid_50 <- mean(cv_procedure$folds$within_50)
+valid_95 <- mean(cv_procedure$folds$within_95)
+
+valid_mae
+valid_mae_scaled
+valid_50
+valid_95
+```
+
+This method gives us the same values we got from using the cv_procedure$cv method to grab the average of each of these fold values.
+
+
+## Question 10.18: coffee ratings - is it fair?
+
+Is the coffee bean analysis fair?
+
+To evaluate if the analysis is fair we can look at 1) how the data was collected, 2) by whom and for what purpose and, 3) how the results might impact individuals and society.
+
+1) The data was collected from Coffee Quality Institute's review pages in January 2018. It was professionally rated on a scale from 0-100
+
+2) It was collected by Coffee Quality Institute (which looks very legit). Their mission appears to be "improving the quality of coffee and the lives of people who produce it." So it appears they wanted to collect data on the quality of coffee from different farms to improve the institution of coffee and the experience of coffee consumers
+
+3) There can be positive impacts for individuals and society in that people will be able to know more about the quality of their coffee before they taste it, if coffee quality is really that important to them. The institute also states that they are hoping to increase access to tools and support that coffee producers need to understand the quality of their coffee and access markets that respond to quality and improve the lives of the people working in the coffee industry.
+
+Potential negative consequences are that, especially if the ratings are subjective, bad coffee quality ratings could be detrimental to coffee farms and result in decreased business and loss of profit. Or it could contribute to the inequitable increase in standing for some coffee farms and not others.
+
+Overall, I would want to know more about the people who are rating and the use of this data. I also have limited information on the accuracy of the measures within the data collection process, which would be important to assess the fairness of the analysis. 
+
+
+## Question 10.19: coffee ratings now with aftertaste
+
+We can try to predict the coffee rating by the aftertaste of the bean. We can use the same prior models.
+
+a. Use stan_glm() to simulate the Normal regression posterior model of total_cup_points by aftertaste
+
+Using the same priors for $\beta_1$ ~ N(75,10^2) and weakly informative priors for the rest of the parameters we can model this new relationship:
+
+```{r results='hide'}
+taste_model <- stan_glm(total_cup_points ~ aftertaste, data = new_coffee,
+                        family = gaussian,
+                        prior_intercept = normal(1,2.5,autoscale=TRUE),
+                        prior = normal(75,10),
+                        prior_aux = exponential(1,autoscale=TRUE),
+                        chains = 4,iter=5000*2,seed=369)
+```
+
+b. Produce a quick plot to determine whether this model is wrong
+
+I will use pp_check() to look at this:
+
+```{r}
+pp_check(taste_model,n=50)+
+  xlab("Coffee Ratings")
+```
+
+
+This shows the real data in dark blue and the simulated data in light blue. This plot gives us evidence that assumptions 2 and 3 (linearity and normal variance around mu and consistent variance) are good assumptions. The real data have a very similar center, spread, and shape as the simulated data sets. 
+
+c. Obtain 10-fold cross-validated measurements of this model's posterior predictive quality
+
+We can do this using the prediction_summary_cv() function:
+```{r}
+cv_procedure <- prediction_summary_cv(model=taste_model,data=new_coffee,k=10)
+cv_procedure$cv
+```
+
+This gives a MAE of 0.67, and scaled MAE of 0.49, within 50 of 0.65 and within 95 of 0.95.
+
+d. If you could pick one predictor of coffee bean ratings, would it be aroma or aftertaste? Why?
+
+These both looks like pretty good predictors. They both have a scaled MAE of about 0.49 and the within_50 and within_95 for aroma (0.64 and 0.94) and aftertaste (0.65 and 0.95) are very similar as well. The only difference is in the MAE in which aroma is about 0.84 while aftertaste is 0.67. Given how close these values all are, I would go off the small difference in the within values and the MAE which would lead me to choose aftertaste as the predictor with the smallest median absolute error and slightly larger within values.
+
+
+## Question 10.20: More weather
+
+Use weather_perth data to explore the Normal regression model of the maximum daily temp (maxtemp) by the minimum daily temp (mintemp) in Perth, Australia. You can tune or use weakly informative priors
+
+a. Fit the model using stan_glm
+
+I will use weakly informative priors for this analysis:
+
+```{r results='hide'}
+data("weather_perth")
+
+temp_model <- stan_glm(maxtemp ~ mintemp, data=weather_perth,
+                       family=gaussian,
+                       prior_intercept = normal(0,2.5,autoscale = TRUE),
+                       prior = normal(0,2.5,autoscale=TRUE),
+                       prior_aux = exponential(1,autoscale=TRUE),
+                       chains = 4, iter = 5000*2,seed=369)
+```
+
+Let's do some basic checks for good faith of this model:
+
+```{r}
+neff_ratio(temp_model)
+
+rhat(temp_model)
+```
+
+All good here. Now some visual checks:
+```{r}
+#mcmc trace
+mcmc_trace(temp_model)
+
+#density plot
+mcmc_dens_overlay(temp_model)
+
+```
+
+All good as well!
+
+
+b. Summarize the posterior understanding of the relationship between maxtemp and mintemp
+
+I can do this looking at tidy()
+
+```{r}
+tidy(temp_model,effects=c("fixed","aux"),
+     conf.int=TRUE,conf.level = 0.9)
+```
+
+I would also like to take a look at the beta_1 values:
+
+```{r}
+#create data frame
+temp_model_df <- as.data.frame(temp_model)
+
+#check on the beta_1 values
+temp_model_df |> 
+  mutate(exceeds_0 = mintemp > 0) |> 
+  tabyl(exceeds_0)
+```
+
+This shows that all beta_1 values are above 0 (positive)
+
+c. Evaluate the model and summarize findings
+
+First I want to peak at the data:
+```{r}
+ggplot(data=weather_perth,aes(x=mintemp,y=maxtemp)) +
+  geom_point(size=0.75)+
+  geom_smooth(method="lm",se=FALSE)
+```
+
+This shows a positive linear looking relationship. We can also look at a plot of some of the posterior model values:
+```{r}
+#100 simulated maxtemps
+
+weather_perth |> 
+  add_fitted_draws(temp_model,n=100) |> 
+  ggplot(aes(x=mintemp,y=maxtemp)) +
+  geom_line(aes(y=.value,group=.draw),alpha=0.15)+
+  geom_point(data=weather_perth,size=0.5)
+  
+```
+
+This looks strongly positive and the draws are very tight signalling there is little variance. 
+
+To evaluate the model, we can do a quick check on the assumptions. First on independence, the maxtemp for a given day would likely be correlated with the next day's observation based on season of the year. However, mintemp will also be correlated with the season of the year, so this should effectively cancel out this correlation for the purposes of this analysis. 
+
+Then for assumptions 2 and 3, we can do a quick check using pp_check:
+
+```{r}
+pp_check(temp_model,n=50)
+```
+
+Oooo, this is a little funky. This shows a bit of similar spread, but the actual data looks like it might be bimodal and I'm not as confident that the center will be the same given this dip.
+
+Next I can look at the prediction_summary_cv:
+```{r}
+cv_procedure <- prediction_summary_cv(model=temp_model,data=weather_perth,k=10)
+cv_procedure$cv
+```
+
+This gives a MAE of 3.23, saying that the observed values for maxtemp are 3.23 higher than our simulated values. The scaled MAE of 0.75 says that the simulated Y of maxtemp is 0.75 standard deviations from the observed mean. And the within values says that the observed Y falls within 45% and 97% of the 50% and 95% predictive posterior intervals respectively. 
+
+
+*Findings* - In this model, there is sufficient evidence to assert that there is a positive relationship between the maxtemp and mintemp in Perth for this data. This is determined by the visual, 90% CI and posterior beta_1 checks. We see some cause for concern in the pp_check that shows that there is some shape in the observed data not captured in the simulated data. The posterior prediction summary values however give us some sense that the center of the data is similar for the observed and simulated data, with the simulated Y being less than 1 standard deviation from the observed mean and almost 97% of the observed Y values fell into the 95% posterior predictive interval. 
+
+
+## Question 10.21: more bikes
+
+Use the bikes data to explore the Normal regression model of rides by humidity
+
+a. I will use weakly informative priors and stan_glm() to fit the model:
+```{r results='hide'}
+data(bikes)
+
+bike_model <- stan_glm(rides ~ humidity,data=bikes,
+                       family=gaussian,
+                       prior_intercept = normal(0,2.5,autoscale=TRUE),
+                       prior = normal(0,2.5,autoscale=TRUE),
+                       prior_aux = exponential(1,autoscale=TRUE),
+                       chains = 4, iter=5000*2,seed=369)
+```
+
+
+Analytic and visual checks:
+```{r}
+neff_ratio(bike_model)
+rhat(bike_model)
+
+mcmc_trace(bike_model)
+mcmc_dens_overlay(bike_model)
+```
+
+Nothing to cause alarm there.
+
+b. Summarize posterior understanding of the relationship between rides and humidity
+
+First I want to look at the raw data:
+```{r}
+ggplot(data=bikes,aes(x=humidity,y=rides))+
+  geom_point(size=0.75)+
+  geom_smooth(method="lm",se=F)
+```
+
+This shows a very weakly negative relationship between humidity and rides. We can also look at posterior draws:
+```{r}
+#100 ride posterior simulations
+bikes |> 
+  add_fitted_draws(bike_model,n=100) |> 
+  ggplot(aes(x=humidity,y=rides))+
+  geom_line(aes(y=.value,group=.draw),alpha=0.15)+
+  geom_point(data=bikes,size=0.5)
+
+```
+
+This shows a number of lines that look weakly negative and some that look as though they could have a zero relationship. 
+
+
+```{r}
+tidy(bike_model,effects=c("fixed","aux"),
+     conf.int=TRUE,conf.level=0.9)
+```
+
+This tidy summary gives us a median estimate of $\beta_1$ as -7.1 and the 90% CI of (-14.6, 0.61). This interval crosses zero, which is some counter evidence that the relationship might not be negative. 
+
+We can also do a math check to see if the $\beta_1$ values is consistently under 0 or not:
+```{r}
+bike_model_df <- as.data.frame(bike_model)
+
+bike_model_df |> 
+  mutate(under_0 = humidity < 0) |> 
+  tabyl(under_0)
+```
+
+This shows that about 6.4% of the beta_1 values are zero or above. This is a small percent but still present. 
+
+c. Evaluate your model and summarize your findings
+
+For assumption 1, number of rides Y is likely correlated to the number of rides in the next day given season (e.g., more likely in the Spring and Fall days where as cold winter or sweltering summer days likely to be lower rides). The predictor X of humidity is likely to be loosely correlated with season in D.C. I know from experience that it gets very humid in the late summer / early fall. However, this does less to capture the correlation for other seasons like cold of winter. This makes me think that this will be a rather weak predictor and doesn't totally capture the role of mitigating independence in the Y variable.  
+
+For assumptions 2 and 3, we can look at the pp_check() function to see if those assumptions feel accurate:
+
+```{r}
+pp_check(bike_model,n=50)
+```
+
+This shows us that the simulated models do give a decent approximation of the center and spread of the data, though it is missing some of the shape of the observed data, particularly this spike and then dip between about 1500 and 3000.
+
+We can look at the posterior predictive summary:
+```{r}
+set.seed(369)
+prediction_summary(bike_model,data=bikes)
+```
+
+We can also use prediction_summary_cv() to conduct a cross validation with k=10 folds to get a more rigorous prediction of the error between the observed data and the simulated model
+
+```{r}
+cv_procedure <- prediction_summary_cv(model=bike_model,data=bikes,k=10)
+cv_procedure$cv
+```
+
+This gives a MAE of 1203, saying that the median of the observed data is about 1203 rides higher than our simulated model. The scaled MAE of 0.76 says that the simulated data median is about 0.76 standard deviations away from the observed mean. The within scores tell us that 47% of the observed data falls within the 50% posterior predictive interval of the simulated data and 96% of the observed data falls within the 95% posterior predictive interval of the simulated data. 
+
+*Findings* - This model seems to provide weak evidence that there is a negative relationships between humidity and ridership in this bike data. There is not sufficient evidence to declare the relationship is always negative as seen in the visual posterior lines check and the analytical check. After evaluating the model with pp_check and the cross validation check it seems like the model is a decent predictor of the observed data. The scaled MAE value shows that the simulated median is less than a standard deviation from the median of the actual data. 
