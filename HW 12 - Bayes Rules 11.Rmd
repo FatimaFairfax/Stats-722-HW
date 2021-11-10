@@ -1,0 +1,458 @@
+---
+title: "HW 12 - Bayes Rules 11"
+author: "Fatima Fairfax"
+date: "11/8/2021"
+output: html_document
+---
+
+Let's load it up!
+
+```{r}
+# Load some packages
+library(bayesrules)
+library(rstanarm)
+library(bayesplot)
+library(tidyverse)
+library(broom.mixed)
+library(tidybayes)
+```
+
+
+## Question 11.1 - why mutliple predictors?
+
+We might want to build a regression model with more than one predictor if multiple predictors are highly associated with the response variable of interest. If we neglect to utilize more than one predictor when there are multiple predictors at play, we will get a worse approximation of the observed data and likely a worse prediction of future data because we will be missing something crucial to the way the response variable is influenced.
+
+## Question 11.2 - Categorical predictors: cars
+
+You want to model a car's miles per gallon in a city (Y) by the make of the car: Ford, Kia, Subaru, or Toyota. The relationship can be written as: $\mu = \beta_0 + \beta_1X_1 + \beta_2X2 + \beta_3X_3$ where the Xs are indicators of whether or not the cars are Kias, Subarus, or Toyotas:
+
+a. Why is there no indicator for the Ford category?
+
+The Ford category is the reference category in this case. That is, when X1, X2, and X3 are all 0, this can be interpreted as the Ford indicator, and all other indicator coefficients represent the difference between the other cars makes and the Ford car make. 
+
+b. Interpret the coefficient $\beta_2$
+
+$\beta_2$ is the typical difference between the Subaru's miles per gallon in a city and Ford's (the baseline) miles per gallon in a city.
+
+c. Interpret the coefficient $\beta_0$
+
+$\beta_0$ is the typical miles per gallon in a city for a Ford car. 
+
+
+## Question 11.3 - Categorical and quantiative predictors: tomatoes
+
+I now grow tomatoes and want to grow big ones. I model tomato's weight in grams (Y) by the number of days it has been growing (X1) and its type, Mr. Stripey or Roma. X2 = 1 indicates a Roma tomato. The linear function is: $\mu = \beta_0 + \beta_1X_1 + \beta_2X_2$
+
+a. Interpret each regression coefficient
+
+$\beta_0$ is the typical weight of a tomato in grams for a hypothetical Roma tomato that has not grown a day
+
+$\beta_1$ represents the typical change in tomato weight for a one unit increase in days grown for all tomatoes
+
+$\beta_2$ represents the typical difference between Mr. Stripey and Roma tomatoes at each value of Y (tomato weight in grams) when they have grown for equal days
+
+b. What would it mean if $\beta_2$ was equal to zero?
+
+If $\beta_2$ was zero, this would mean that there is no difference in the typical weight of Roma and Mr. Stripey tomatoes if they have had equal days to grow.
+
+
+## Question 11.4 - Interactions: tomatoes
+
+Now we are going to use an interaction term between grow time and type: $\mu = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_1X_2$
+
+a. Explain what it means for X1 and X2 to interact
+
+If X1 and X2 are interacting, that means that the type of tomato (Roma or Mr. Stripey) affects the relationship between weight of the tomato and days grown. That is, the slope of the line between weight of tomatoes and the days it has been growing is different depending on the type of tomato.
+
+b. Interpret $\beta_3$
+
+$\beta_3$ captures the difference in slopes between for the relationship between weight and days grown between the two tomato types. So this shows how the change in weight differs between Roma and Mr. Stripey tomatoes. 
+
+
+## Question 11.5 - Interaction terms
+
+a. Sketch a model that would benefit from including an interaction term between a categorical and quantitative predictor:
+
+In this model we have Y = amount of beach pollution and X1 = Hour of the day. This would benefit from a categorical predictor for time of the year between summertime and not summertime. In the summertime, we might expect that people are at the beach throughout the whole day, so the beach pollution might be higher starting earlier. In other seasons, people are only going to the beach presumably after work or school and there are likely less people, so the mean will be later in the day and lower. 
+
+![Yes Interaction](/Users/fatimafairfax/Desktop/Stats - Complete HW Files/HW12-Q11.5-a.jpeg)
+
+b. Sketch a model that would not benefit from including an interaction term between a categorical and quantitative predictor:
+
+In this model we have Y = amount of red lights you've encountered and X1 = years you've been driving. This would not benefit from an interaction term with the categorical variable Female or Male. We would not expect there to be any difference in the relationship between how many red lights you encounter and the number of years you've been driving if you are male versus if you are female. 
+
+![No Interaction](/Users/fatimafairfax/Desktop/Stats - Complete HW Files/HW12-Q11.5-b.jpeg)
+
+c. What are two other ways to determine if you should include interaction terms in your model?
+
+First, you can think about context. Does it make sense that there would be an interaction effect in the variables you've included? For example, if you are trying to model Y = price of your meal with quantitative predictor X1 = time spent at a restaurant, and categorical predictor X2 = fancy restaurant (1) and fast food restaurant (2) you would likely expect that the relationship between time spent at a restaurant and the price of the meal will differ significantly depending if you are at a fancy restaurant than if you're at a fast food restaurant. 
+
+Second, you can use hypothesis testing to determine if $\beta_3$ is not equal to zero. 
+
+## Question 11.6 - Improving the model: shoe size
+
+We'll model child's shoe size (Y) by two predictors: childs age (X1) and if the child knows how to swim (X2)
+
+a. Generally speaking, why can it be beneficial to add predictors to models?
+
+It can be good to add predictors to better represent the data that contributes to the response variable of interest. Without them, the model could be too simple and the outcome would be biased and will not actually look like the observed data.
+
+b. Generally speaking, why can it be beneficial to remove predictors from models?
+
+Too many predictors may add too much complexity if they aren't actually giving us data that will help us model the relationship of interest. More predictors can also overfit the data which will make it so the model is really good at precisely predicting the observed data, but would have a lot of trouble predicting any future data. 
+
+c. What might you add to this model to improve your predictions of shoe size? Why?
+
+I might add child's height to the model. There is a good amount of variation of the size of a child at each age, so adding a predictor that could capture some of this variation in one sense (in the different heights) might be helpful in addition to age to capture the variation in the response variable of child's shoe size.
+
+d. What might you remove from this model to improve it? Why?
+
+I would remove the indicator for child's ability to swim. This feels wholly irrelevant to the shoe size of the child. If there is any predictive ability of ability to swim, I might assume that it would be correlated with the existing variable of age. That is, I would guess that the older the child is, the more likely they are to know how to swim. So at best the swim indicator gives us slightly redundant data, and at worse its irrelevant and adding unnecessary complexity.
+
+
+## Question 11.7 - What makes a good model? 
+
+a. What are qualities of a good model?
+
+Good models will be fair and will be in accordance with some of the basic assumptions we have about independence, linearity, and consistent variance (in the linear models we've been working with). They will take context in to account and use tests to balance the amount of relevant predictors. They will fit the data well enough that it produces good predictions but not too well so as to be useless for other data sets. They will pass our diagnostic checks. 
+
+b. What are qualities of a bad model?
+
+Bad models will be unfair and violate some of the basic assumptions of independence, linearity and consistent variance (in the linear regressions we have been doing). They will not make logical sense in context and use a lot of predictors just because or only use one when there is a lot more happening in the data. They will not fit the data well and give bad prediction checks, and fail some of the diagnostic tests we have for models (e.g., mcmc mixing, rhat, neff ratio, visual checks).
+
+## Question 11.8 - Is our model good / better?
+
+What techniques have you learned in this chapter to assess and compare models? 
+
+We've learned three techniques, visualization, cross-validation comparison, and ELPD comparison.
+
+*visualization* - we can use ppc_intervals or ppc_violin_grouped to look at the posterior predictive models for multiple models. We can see which models capture the the observed Y data in the 50% and 95% within intervals and how narrow those intervals are compared to each other. This will let us know how precise the predictions are in comparison to each other
+
+*cross-validation* - like last chapter, we can use k-fold cross validation to train the model on sets of data and tests multiple times to get a more honest posterior predictive estimates. We can then compare the evaluation values of MAE (median absolute error), scaled_MAE (scaled median absolute error) and within 50 and within 95, the posterior predictive interval values. This will give us a sense of the comparative values of error between the observed data and the different models
+
+*ELPD* - the expected log-predictive densities (ELPD) calculates the expected log posterior predictive pdf across a new set of data points. Here we can calculate the ELPD for each model can compare them. The program in R will rank the models from best to worst, best being the model with the highest ELPD. This provides an output of both the elpd difference between models and the standard error difference. This allows us to get a sense for if the differences between models fall within the standard error range of the best model. If it does fall within, then the models are not too different with respect to their ELPD scores and other considerations (complexity, cross-validation etc) might be able to break the tie on which model is best.  
+
+## Question 11.9 - Bias-variance trade-off
+
+Briefly explain the bias-variance tradeoff and why its important.
+
+The bias-variance trade-off is trying to balance of the predictors included in our model. We want to include enough predictors so that we have enough relevant information to predict Y, but we don't want too many to overfit our model to the sample data. If we have a model with too few predictors it can be too simple, producing low variance but high bias. If we have a model with too many predictors it can be too precise to the data sample, producing low bias but high variance. We want to hit the sweet spot with relatively low bias and low variance.
+
+
+# Applied exercises
+
+I will use penguins_bayes data and weakly informative priors and an understanding that the average penguin weighs between 3,500 and 4,500 grams. A predictor of interest is penguin species: Adelie, Chinstrap, or Gentoo.
+
+```{r}
+#alternative penguin data
+data("penguins_bayes")
+
+penguin_data <- penguins_bayes |> 
+  filter(species %in% c("Adelie","Gentoo"))
+
+```
+
+
+## Question 11.10 - Penguins! Main effects
+
+First let's explore the relationship between body_mass_g with flipper_length_mm and species:
+
+a. Plot and summarize the observed relationships among these three variables
+
+I'll make two plots, the first for the relationship between body_mass_g and flipper_length, the second between body mass and species:
+
+```{r}
+ggplot(penguin_data,aes(x=flipper_length_mm,y=body_mass_g))+
+  geom_point()+
+  labs(title="Flipper Length")
+
+ggplot(penguin_data,aes(x=species,y=body_mass_g))+
+  geom_point()+
+  labs(title="Species")
+```
+
+These plots show a suspected positive linear relationship between body mass and flipper length. It also shows that Gentoo penguins tend to have a higher body mass than Adelie penguins on average. 
+
+We can also look at the second plot in a density plot:
+```{r}
+ggplot(penguin_data,aes(x=body_mass_g,fill=species))+
+  geom_density(alpha=0.5)
+```
+
+
+This is perhaps a better visualization that the body mass of the Gentoo species lies above the Adelie species. Here we see an average in Gentoo of about 5000 and an average in Adelie of around 3500.
+
+b. Use stan_glm() to simulate a posterior Normal regression model of body_mass by flipper length and species without an interaction term:
+
+I will use the weakly informative priors for beta_1 and sigma, but use the given information to provide a prior for beta_0. We know that the average penguin weight is between 3500 and 4500. So we will take 4000 as mu and 250 as the sd (so that 2 sds cover the spread of the data):
+
+```{r results='hide'}
+penguin_model <- stan_glm(body_mass_g ~ flipper_length_mm + species, data = penguin_data, family = gaussian,
+                          prior_intercept = normal(4000,250),
+                          prior = normal(0,2.5,autoscale=TRUE),
+                          prior_aux = exponential(1,autoscale=TRUE),
+                          chains=4,iter=5000*2,seed=369)
+```
+
+c. Create and interpret both visual and numerical diagnostics of your MCMC simulation
+
+First for the visual checks with trace and chain diagrams:
+
+```{r}
+mcmc_trace(penguin_model)
+
+mcmc_dens_overlay(penguin_model)
+```
+
+These all look good and indicate that they are mixing well.
+
+Then the numerical diagnostics:
+
+```{r}
+neff_ratio(penguin_model)
+
+rhat(penguin_model)
+```
+
+
+These are both good, with a Neff over 0.1 and a rhat near 1 but less than 1.05. One note is that the Neff is lower than in past examples we've had in these HWs where it was near or even above 1. 
+
+d. Produce a tidy summary of this model and interpret the non-intercept coefficients' posterior median values in context
+
+```{r}
+tidy(penguin_model,c("fixed","aux"),conf.int=TRUE,conf.level=0.9)
+```
+
+Here we have a beta_1 on flipper_length_mm of 42.4. This means that for every one unit increase in body mass in grams, there is an average of 42.4 unit increases in flipper length in mm. 
+
+We have a beta_2 on speciesGentoo of 218.5. This is the typical difference in body mass in Gentoo versus Adelie penguins. This means that typically, the Gentoo penguin will be 218.5 grams heavier than the Adelie penguin. 
+
+e. Simulate, plot and describe the posterior predictive model for the body mass of an Adelie penguin with a flipper length of 197 mm.
+
+```{r}
+#set the seed and convert the data frame
+set.seed(369)
+penguin_df <- as.data.frame(penguin_model)
+
+#set prediction notation
+predict_Adelie197 <- penguin_df |> 
+  mutate(mu = `(Intercept)` + flipper_length_mm*197 + speciesGentoo*0,
+         y_new =rnorm(20000,mean=mu,sd=sigma))
+
+#plot the posterior predictive model
+ggplot(predict_Adelie197,aes(x=y_new))+
+  geom_density()+
+  labs(title="197mm Adelie Penguin Prediction")
+
+
+##above I autopiloted the long ways to program this. Below I will use the posterior predict function we learned this chapter##
+
+
+#simulate posterior with posterior_predict
+prediction <- posterior_predict(
+  penguin_model,
+  newdata = data.frame(flipper_length_mm = 197,
+                       species = "Adelie"))
+
+#plot
+mcmc_areas(prediction) +
+  xlab("body_mass_g")
+
+```
+
+Both the long form and the new function give very similar results. They show a mean prediction of body mass in grams of around 4000 with a spread primarily between 3000 and 5000. 
+
+## Question 11.11 - Penguins Interaction
+
+Now we'll build a model with an interaction term between the two predictors
+
+a. Use stan_glm() to simulate the posterior model 
+
+```{r results='hide'}
+penguin_model_2 <- stan_glm(body_mass_g ~ flipper_length_mm + species + flipper_length_mm:species, data = penguin_data, family = gaussian,
+                          prior_intercept = normal(4000,250),
+                          prior = normal(0,2.5,autoscale=TRUE),
+                          prior_aux = exponential(1,autoscale=TRUE),
+                          chains=4,iter=5000*2,seed=369)
+```
+
+b. Simulate and plot 50 posterior model lines. Describe what you learn:
+
+```{r}
+penguin_data |> 
+  drop_na() |> 
+  add_fitted_draws(penguin_model_2,n=50) |> 
+  ggplot(aes(x=flipper_length_mm,y=body_mass_g,color=species))+
+  geom_line(aes(y=.value,group=paste(species,.draw)),alpha=0.15)
+
+```
+
+
+This plot of the simulated posterior model lines shows a bit of interaction between species and flipper length on body mass. The Adelie is overall lower in flipper length and body mass than Gentoo. In addition, the slope of most of the Adelie lines seem to be less steep than those of the Gentoo lines. Moreover, the Gentoo lines seems to have less variation in their slope than the Adelie lines do. 
+
+c. Produce a tidy summary. Do you have evidence that the interaction terms are necessary?
+
+```{r}
+tidy(penguin_model_2, effects=c("fixed","aux"))
+```
+
+Let's go back to what this is saying. For Adelie birds, the formula is reduced to:
+
+mu = beta_0 + beta_1(flipper_length) + beta_2(Gentoo) + beta_3(flipper*Gentoo)
+mu = beta_0 + beta_1(flipper_length)
+
+mu = -2897.4 + 34.7(flipper_length)
+
+For the Gentoo bird, the formula is:
+
+mu = (beta_0 + beta_2) + (beta_1 + beta_3)(flipper_length)
+
+mu = (-2897.4 - 3335.5) + (34.7 + 17.3)(flipper_length)
+
+This shows that the relationship for Gentoo is more positive than the relationship with Adelie. 
+
+With context and the visualization, we can see that there is a different in the increase between Adelie and Gentoo birds in this data set. We can check if there is substantial posterior evidence that beta_3 != 0:
+
+```{r}
+posterior_interval(penguin_model_2,prob=.90,
+                   pars=c("flipper_length_mm:speciesGentoo"))
+```
+
+The 90% posterior interval for the beta_3 coefficient is entirely above 0, which gives us some good evidence that it is most likely positive and non-zero. All of the above argues that there is an interaction effect and that it should maybe be taken in to account in the model.
+
+## Question 11.12 - Penguins 3 predictors
+
+Next we'll explore body mass by three predictors: flipper_length, bill_length, and bill_depth. No interactions
+
+a. Use stan_glm to simulate the posterior model
+
+```{r results='hide'}
+penguin_model_3 <- stan_glm(body_mass_g ~ flipper_length_mm + bill_length_mm + bill_depth_mm, data = penguin_data, family=gaussian,
+                            prior_intercept = normal(4000,250),
+                            prior = normal(0,2.5,autoscale=TRUE),
+                            prior_aux = normal(0,2.5,autoscale=TRUE))
+```
+
+b. Use posterior_interval to produce 95% CIs for the model parameters
+
+```{r}
+posterior_interval(penguin_model_3,prob=0.95)
+```
+
+
+c. Based on the 95% CIs, when controlling for other predictors, which predictors have a significant positive, negative, or no association with body mass?
+
+All of the parameters have CIs well above zero, which leads us to believe that they all have a positive association with body mass. 
+
+
+## Question 11.13 - Penguins Comparing models
+
+Consider 4 separate models of body_mass_g
+
+a. Simulate these four models using stan_glm:
+
+```{r results='hide'}
+body_1 <- stan_glm(body_mass_g ~ flipper_length_mm, data = penguin_data,family=gaussian,
+                   prior_intercept = normal(4000,250),
+                   prior = normal(0,2.5,autoscale=TRUE),
+                   prior_aux = exponential(1,autoscale=TRUE))
+
+body_2 <- stan_glm(body_mass_g ~ species, data = penguin_data,family=gaussian,
+                   prior_intercept = normal(4000,250),
+                   prior = normal(0,2.5,autoscale=TRUE),
+                   prior_aux = exponential(1,autoscale=TRUE))
+
+body_3 <- stan_glm(body_mass_g ~ flipper_length_mm + species, data = penguin_data,family=gaussian,
+                   prior_intercept = normal(4000,250),
+                   prior = normal(0,2.5,autoscale=TRUE),
+                   prior_aux = exponential(1,autoscale=TRUE))
+
+body_4 <- stan_glm(body_mass_g ~ flipper_length_mm  + bill_length_mm + bill_depth_mm, data = penguin_data,family=gaussian,
+                   prior_intercept = normal(4000,250),
+                   prior = normal(0,2.5,autoscale=TRUE),
+                   prior_aux = exponential(1,autoscale=TRUE))
+```
+
+
+b. Produce and compare pp_check plots for the four models:
+
+```{r}
+pp_check(body_1) + labs(title="flipper")
+
+pp_check(body_2) + labs(title="species")
+
+pp_check(body_3) + labs(title="flipper + species")
+
+pp_check(body_4) + labs(title="flipper + bill length + bill depth")
+```
+
+All of these plots seem to cover the general center and spread of the observed data. The flipper chart seems to show some bimodality, but is missing the middle 'hump' that the observed data shows.
+
+The species data is bimodal as expected given what we know about the difference in mass of the two species, but really misses the middle hump in the data.
+
+The third plot with the species and flipper seems like a few simulated lines hit the middle hump, but still overall looks bimodal. 
+
+The final plot looks like it might get more close to the shape of the observed data, though the lines look a bit muddle at the top of the shape, making it a bit hard to see.
+
+c. Use 10-fold cross validation to assess and compare the posterior predictive quality of the four models using the prediction_summary_cv(). Note: we can only prediict bodymass for penguins with complete info. Two penguins have NA values. To remove them, select our columns of interest before removing the penguins to ensure we're not throwing out penguins with data missing on variables we don't care about:
+
+```{r}
+penguins_complete <- penguins_bayes |> 
+  select(flipper_length_mm,body_mass_g,species,bill_length_mm,bill_depth_mm) |> 
+  na.omit()
+```
+
+Then we can run the cross-validation:
+
+```{r}
+set.seed(369)
+
+p1 <- prediction_summary_cv(model = body_1, data=penguins_complete,k=10)
+p2 <- prediction_summary_cv(model=body_2,data=penguins_complete,k=10)
+p3 <- prediction_summary_cv(model=body_3,data=penguins_complete,k=10)
+p4 <- prediction_summary_cv(model=body_4,data=penguins_complete,k=10)
+
+```
+
+Let's see it all together:
+```{r}
+cross_body <- rbind(p1$cv,p2$cv,p3$cv,p4$cv) |> 
+  mutate(model = row_number())
+cross_body
+```
+
+
+Here we see that model 2 has the highest MAE and MAEL scaled values, meaning that it fits the data the least well. All of the other three models have fairly comparable MAE values and overall the MAE scaled values are very similar. The within posterior predictive intervals are also pretty comparable across the models. For within 50, model 1 is the highest (52%) and model 2 is the lowest (47%). For within 95, model 2 is the highest (barely) with 96% and model 4 is the lowest (94%).
+
+
+d. Evaluate and compare the ELPD posterior predictive accuracy of the four models
+
+```{r}
+#calculate the ELPD for the 4 models
+
+loo_1 <- loo(body_1)
+loo_2 <- loo(body_2)
+loo_3 <- loo(body_3)
+loo_4 <- loo(body_4)
+
+#look at the results
+c(loo_1$estimates[1],loo_2$estimates[1],loo_3$estimates[1],loo_4$estimates[1])
+```
+
+Comparing the four model's ELPD:
+
+```{r}
+loo_compare(loo_1,loo_2,loo_3,loo_4)
+```
+
+
+Using the loo compare, this shows that the highest ELPD is model 4 and the worst is model 2, which checks out with the cross-validation findings. There is a pretty big drop off between the best model (model 4) and the next best model (body 3). This is also saying with the standard error, the difference between model 3 and model 4 is over 5 standard errors from the estimated -40.1 difference (-40.1 +- 7.4*6) =  (-84.5, 4.3).
+
+
+e. In summary, which of these four models is the "best"?
+
+Given the cross validation and the ELPD evaluations, I would say that model 4 is the best. Though it is the most complex, the evaluations seem to favor this model. In the 10 fold cross-validation evaluation, the MAE and especially scaled MAE values are very comparable. Alternatively, the ELPD evaluations favor model 4 and the next best model, model 3, is over 5 standard errors from an elpd of 0. 
+
+# PROJECT PROPOSAL:
+
+
