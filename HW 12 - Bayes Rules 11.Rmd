@@ -453,7 +453,7 @@ e. In summary, which of these four models is the "best"?
 
 Given the cross validation and the ELPD evaluations, I would say that model 4 is the best. Though it is the most complex, the evaluations seem to favor this model. In the 10 fold cross-validation evaluation, the MAE and especially scaled MAE values are very comparable. Alternatively, the ELPD evaluations favor model 4 and the next best model, model 3, is over 5 standard errors from an elpd of 0. 
 
-# (Tentative) PROJECT PROPOSAL:
+# PROJECT PROPOSAL:
 
 For my presentation I want to look at data on disparities in covid cases for Black Americans. I want to use the data set from Data 4 Black lives [https://d4bl.org/covid19-data.html]. They started tracking numbers on rates of cases and deaths of covid 19 for Black Americans pretty early in to the pandemic, pulling state level data in real time from a variety of state health and info websites. 
 
