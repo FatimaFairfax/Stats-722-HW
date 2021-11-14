@@ -453,6 +453,14 @@ e. In summary, which of these four models is the "best"?
 
 Given the cross validation and the ELPD evaluations, I would say that model 4 is the best. Though it is the most complex, the evaluations seem to favor this model. In the 10 fold cross-validation evaluation, the MAE and especially scaled MAE values are very comparable. Alternatively, the ELPD evaluations favor model 4 and the next best model, model 3, is over 5 standard errors from an elpd of 0. 
 
-# PROJECT PROPOSAL:
+# (Tentative) PROJECT PROPOSAL:
+
+For my presentation I want to look at data on disparities in covid cases for Black Americans. I want to use the data set from Data 4 Black lives [https://d4bl.org/covid19-data.html]. They started tracking numbers on rates of cases and deaths of covid 19 for Black Americans pretty early in to the pandemic, pulling state level data in real time from a variety of state health and info websites. 
+
+I've pulled the most recent data extraction for every state (which was Feb 2021). I've created a new variable in the data set to show the difference in proportion of Black people in a state to the proportion of Black covid cases (of total cases in the state). I want this to be my response variable and am interested in finding state level data for predictor variables. Ideally, I would want predictor variables of income disparities, educational attainment disparities, some measure of discrimination, healthcare insurance rates. I'm hoping these will all be available in census bureau data (the site seems to say this, but I'm having some trouble finding the data sheets.)
+
+Given the nature of these variables and relationship, I want to use a Bayesian Normal Linear Regression. The data suggests that the percent differences follow a generally normal distribution. I plan to use weakly informative priors. 
+
+**Note to Nico: If you have any advice or comments on this approach, especially about where to easily obtain state level data of this type, I am open to all input!**
 
 
